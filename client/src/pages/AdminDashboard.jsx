@@ -120,7 +120,7 @@ function AdminDashboard() {
                 {/* Statistics Cards - All Clickable */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     <button
-                        onClick={() => toast.info('Viewing all users')}
+                        onClick={() => navigate('/admin/users')}
                         className="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-all transform hover:scale-105 text-left"
                     >
                         <div className="flex items-center justify-between">
@@ -136,7 +136,7 @@ function AdminDashboard() {
                     </button>
 
                     <button
-                        onClick={() => toast.info('Viewing all products')}
+                        onClick={() => navigate('/admin/products')}
                         className="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-all transform hover:scale-105 text-left"
                     >
                         <div className="flex items-center justify-between">
@@ -152,7 +152,7 @@ function AdminDashboard() {
                     </button>
 
                     <button
-                        onClick={() => toast.info('Viewing all orders')}
+                        onClick={() => toast.info('Orders management coming soon')}
                         className="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-all transform hover:scale-105 text-left"
                     >
                         <div className="flex items-center justify-between">
@@ -168,7 +168,7 @@ function AdminDashboard() {
                     </button>
 
                     <button
-                        onClick={() => toast.info('Viewing revenue reports')}
+                        onClick={() => toast.info('Revenue reports coming soon')}
                         className="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-all transform hover:scale-105 text-left"
                     >
                         <div className="flex items-center justify-between">
