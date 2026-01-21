@@ -1,94 +1,81 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { authService } from '../services/api.service';
+import { authService, adminService } from '../services/api.service';
 import toast from 'react-hot-toast';
 import { Users, Package, ShoppingCart, FileText, LogOut, UserCheck, TrendingUp, CheckCircle, XCircle } from 'lucide-react';
 
 function AdminDashboard() {
     const navigate = useNavigate();
-
-    // Dummy Statistics Data
-    const [stats] = useState({
-        users: {
-            total: 156,
-            customers: 128,
-            pharmacists: 25,
-            pendingPharmacists: 3
-        },
-        products: {
-            total: 216,
-            lowStock: 12
-        },
-        orders: {
-            total: 543,
-            pending: 18,
-            today: 24
-        },
-        revenue: {
-            total: 2450000
-        }
+    const [stats, setStats] = useState({
+        users: { total: 0, customers: 0, pharmacists: 0, pendingPharmacists: 0 },
+        products: { total: 0, lowStock: 0 },
+        orders: { total: 0, pending: 0, today: 0 },
+        revenue: { total: 0 }
     });
+    const [pendingPharmacists, setPendingPharmacists] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    // Dummy Pending Pharmacists Data
-    const [pendingPharmacists, setPendingPharmacists] = useState([
-        {
-            _id: '1',
-            user: {
-                firstName: 'Nimal',
-                lastName: 'Silva',
-                email: 'nimal.silva@pharmacy.lk',
-                phone: '+94712345678'
-            },
-            licenseNumber: 'SLMC12345',
-            nic: '199012345678',
-            qualifications: 'B.Pharm, M.Pharm',
-            yearsOfExperience: 5,
-            pharmacyBranch: 'Kandy Main Branch',
-            specialization: 'Clinical Pharmacy'
-        },
-        {
-            _id: '2',
-            user: {
-                firstName: 'Saman',
-                lastName: 'Fernando',
-                email: 'saman.fernando@pharmacy.lk',
-                phone: '+94773456789'
-            },
-            licenseNumber: 'SLMC67890',
-            nic: '198567891234',
-            qualifications: 'B.Pharm',
-            yearsOfExperience: 8,
-            pharmacyBranch: 'Negombo Branch',
-            specialization: 'Community Pharmacy'
-        },
-        {
-            _id: '3',
-            user: {
-                firstName: 'Kasun',
-                lastName: 'Perera',
-                email: 'kasun.perera@pharmacy.lk',
-                phone: '+94771112233'
-            },
-            licenseNumber: 'SLMC11223',
-            nic: '199234567890',
-            qualifications: 'B.Pharm, Dip. Clinical Pharmacy',
-            yearsOfExperience: 3,
-            pharmacyBranch: 'Colombo Central',
-            specialization: 'Hospital Pharmacy'
+    useEffect(() => {
+        fetchDashboardData();
+    }, []);
+
+    const fetchDashboardData = async () => {
+        try {
+            const [statsRes, pharmacistsRes] = await Promise.all([
+                adminService.getDashboardStats(),
+                adminService.getPendingPharmacists({ limit: 10 }),
+            ]);
+
+            if (statsRes.success) {
+                setStats(statsRes.data);
+            }
+            if (pharmacistsRes.success) {
+                setPendingPharmacists(pharmacistsRes.data);
+            }
+        } catch (error) {
+            console.error('Failed to load dashboard data:', error);
+            // Fallback to dummy data if API fails so the UI stays interactive
+            setStats({
+                users: { total: 156, customers: 128, pharmacists: 25, pendingPharmacists: 3 },
+                products: { total: 216, lowStock: 12 },
+                orders: { total: 543, pending: 18, today: 24 },
+                revenue: { total: 2450000 }
+            });
+        } finally {
+            setLoading(false);
         }
-    ]);
-
-    const handleApprovePharmacist = (id) => {
-        setPendingPharmacists(pendingPharmacists.filter(p => p._id !== id));
-        toast.success('Pharmacist approved successfully!');
     };
 
-    const handleRejectPharmacist = (id) => {
+    const handleApprovePharmacist = async (id) => {
+        try {
+            const response = await adminService.updatePharmacistApproval(id, { approvalStatus: 'APPROVED' });
+            if (response.success) {
+                setPendingPharmacists(pendingPharmacists.filter(p => p._id !== id));
+                toast.success('Pharmacist approved successfully!');
+                fetchDashboardData();
+            }
+        } catch (error) {
+            toast.error('Failed to approve pharmacist');
+        }
+    };
+
+    const handleRejectPharmacist = async (id) => {
         const reason = prompt('Enter rejection reason:');
         if (!reason) return;
 
-        setPendingPharmacists(pendingPharmacists.filter(p => p._id !== id));
-        toast.success('Pharmacist rejected');
+        try {
+            const response = await adminService.updatePharmacistApproval(id, {
+                approvalStatus: 'REJECTED',
+                rejectionReason: reason
+            });
+            if (response.success) {
+                setPendingPharmacists(pendingPharmacists.filter(p => p._id !== id));
+                toast.success('Pharmacist rejected');
+                fetchDashboardData();
+            }
+        } catch (error) {
+            toast.error('Failed to reject pharmacist');
+        }
     };
 
     const handleLogout = () => {
@@ -96,6 +83,14 @@ function AdminDashboard() {
         navigate('/login');
         toast.success('Logged out successfully');
     };
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -219,10 +214,10 @@ function AdminDashboard() {
                                     <div className="flex justify-between items-start">
                                         <div className="flex-1">
                                             <h4 className="font-semibold text-gray-900 text-lg">
-                                                {pharmacist.user.firstName} {pharmacist.user.lastName}
+                                                {pharmacist.user?.firstName} {pharmacist.user?.lastName}
                                             </h4>
-                                            <p className="text-sm text-gray-600 mt-1">{pharmacist.user.email}</p>
-                                            <p className="text-sm text-gray-600">{pharmacist.user.phone}</p>
+                                            <p className="text-sm text-gray-600 mt-1">{pharmacist.user?.email}</p>
+                                            <p className="text-sm text-gray-600">{pharmacist.user?.phone}</p>
 
                                             <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
                                                 <div className="bg-blue-50 p-2 rounded">
