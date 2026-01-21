@@ -254,13 +254,9 @@ API documentation is available at `/api/docs` when running the development serve
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📄 License
-
-This project is licensed under the MIT License.
-
 ## 👨‍💻 Author
 
-**Viduz Pharmacy Development Team**
+**Vidusha Puswalkatiya**
 
 ## 🙏 Acknowledgments
 
@@ -270,4 +266,4 @@ This project is licensed under the MIT License.
 
 ---
 
-**Note**: This is an academic project for BSc final year. The delivery rider module is planned for future development.
+**Note**: This is a University academic Final project for BSc final year. The delivery rider module is planned for future development.
