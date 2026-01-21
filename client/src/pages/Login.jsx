@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authService } from '../services/api.service';
 import toast from 'react-hot-toast';
@@ -10,6 +10,29 @@ function Login() {
         password: '',
     });
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        const user = authService.getCurrentUser();
+        if (user) {
+            redirectBasedOnRole(user);
+        }
+    }, []);
+
+    const redirectBasedOnRole = (user) => {
+        switch (user?.role?.toUpperCase()) {
+            case 'ADMIN':
+                navigate('/admin/dashboard');
+                break;
+            case 'PHARMACIST':
+                navigate('/pharmacist/dashboard');
+                break;
+            case 'CUSTOMER':
+                navigate('/customer/dashboard');
+                break;
+            default:
+                navigate('/');
+        }
+    };
 
     const handleChange = (e) => {
         setFormData({
@@ -27,22 +50,7 @@ function Login() {
 
             if (response.success) {
                 toast.success('Login successful!');
-                const user = response.data.user;
-
-                // Redirect based on role
-                switch (user.role) {
-                    case 'ADMIN':
-                        navigate('/admin/dashboard');
-                        break;
-                    case 'PHARMACIST':
-                        navigate('/pharmacist/dashboard');
-                        break;
-                    case 'CUSTOMER':
-                        navigate('/customer/dashboard');
-                        break;
-                    default:
-                        navigate('/');
-                }
+                redirectBasedOnRole(response.data.user);
             }
         } catch (error) {
             toast.error(error.response?.data?.message || 'Login failed');

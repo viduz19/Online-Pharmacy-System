@@ -1,35 +1,73 @@
 import { Link } from 'react-router-dom';
-import { ShoppingBag, Pill, Users, Shield } from 'lucide-react';
+import { ShoppingBag, Pill, Users, Shield, User, LogOut } from 'lucide-react';
+import { authService } from '../services/api.service';
+import toast from 'react-hot-toast';
 
 function Home() {
+    const user = authService.getCurrentUser();
+
+    const handleLogout = () => {
+        authService.logout();
+        window.location.reload();
+        toast.success('Logged out successfully');
+    };
+
+    const getDashboardLink = () => {
+        if (!user) return '/login';
+        if (user.role === 'admin') return '/admin/dashboard';
+        if (user.role === 'pharmacist') return '/pharmacist/dashboard';
+        return '/customer/dashboard';
+    };
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
             {/* Navigation */}
-            <nav className="bg-white shadow-sm">
+            <nav className="bg-white shadow-sm sticky top-0 z-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
                         <div className="flex items-center">
                             <h1 className="text-2xl font-bold text-blue-600">🏥 Viduz Pharmacy</h1>
                         </div>
-                        <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-6">
                             <Link
                                 to="/products"
-                                className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium"
+                                className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
                             >
                                 Products
                             </Link>
-                            <Link
-                                to="/login"
-                                className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700"
-                            >
-                                Login
-                            </Link>
-                            <Link
-                                to="/register"
-                                className="border border-blue-600 text-blue-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50"
-                            >
-                                Register
-                            </Link>
+                            {user ? (
+                                <div className="flex items-center space-x-6">
+                                    <Link
+                                        to={getDashboardLink()}
+                                        className="text-blue-600 font-semibold flex items-center hover:text-blue-700 transition-colors"
+                                    >
+                                        <User className="w-4 h-4 mr-1" />
+                                        Dashboard
+                                    </Link>
+                                    <button
+                                        onClick={handleLogout}
+                                        className="text-gray-600 font-medium flex items-center hover:text-red-600 transition-colors"
+                                    >
+                                        <LogOut className="w-4 h-4 mr-1" />
+                                        Logout
+                                    </button>
+                                </div>
+                            ) : (
+                                <>
+                                    <Link
+                                        to="/login"
+                                        className="bg-blue-600 text-white px-5 py-2 rounded-lg text-sm font-bold hover:bg-blue-700 transition-all shadow-sm hover:shadow-md"
+                                    >
+                                        Login
+                                    </Link>
+                                    <Link
+                                        to="/register"
+                                        className="border-2 border-blue-600 text-blue-600 px-5 py-2 rounded-lg text-sm font-bold hover:bg-blue-50 transition-all"
+                                    >
+                                        Register
+                                    </Link>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>
