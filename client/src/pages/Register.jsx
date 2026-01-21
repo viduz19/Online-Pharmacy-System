@@ -106,11 +106,15 @@ function Register() {
 
             if (response.success) {
                 if (role === 'PHARMACIST') {
+                    // Clear the session since they are pending approval
+                    authService.logout();
                     toast.success('Registration successful! Your account is pending admin approval.');
                     navigate('/login');
                 } else {
                     toast.success('Registration successful! Welcome to Viduz Pharmacy!');
-                    navigate('/customer/dashboard');
+                    navigate('/products');
+                    // Force a reload to update nav bars if needed, or rely on state
+                    window.location.reload();
                 }
             }
         } catch (error) {
@@ -142,8 +146,8 @@ function Register() {
                                 type="button"
                                 onClick={() => setRole('CUSTOMER')}
                                 className={`p-4 border-2 rounded-lg font-medium transition-all ${role === 'CUSTOMER'
-                                        ? 'border-blue-600 bg-blue-50 text-blue-700'
-                                        : 'border-gray-300 text-gray-700 hover:border-gray-400'
+                                    ? 'border-blue-600 bg-blue-50 text-blue-700'
+                                    : 'border-gray-300 text-gray-700 hover:border-gray-400'
                                     }`}
                             >
                                 👤 Customer
@@ -152,8 +156,8 @@ function Register() {
                                 type="button"
                                 onClick={() => setRole('PHARMACIST')}
                                 className={`p-4 border-2 rounded-lg font-medium transition-all ${role === 'PHARMACIST'
-                                        ? 'border-blue-600 bg-blue-50 text-blue-700'
-                                        : 'border-gray-300 text-gray-700 hover:border-gray-400'
+                                    ? 'border-blue-600 bg-blue-50 text-blue-700'
+                                    : 'border-gray-300 text-gray-700 hover:border-gray-400'
                                     }`}
                             >
                                 💊 Pharmacist

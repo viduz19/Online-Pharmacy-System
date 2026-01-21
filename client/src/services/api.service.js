@@ -71,6 +71,18 @@ export const orderService = {
         const response = await api.get(`/orders/${id}`);
         return response.data;
     },
+
+    // Update order status (Checkout/Payment)
+    updateOrderStatus: async (id, data) => {
+        const response = await api.patch(`/orders/${id}/status`, data);
+        return response.data;
+    },
+
+    // Get all orders (Pharmacist/Admin)
+    getAllOrders: async (params = {}) => {
+        const response = await api.get('/orders', { params });
+        return response.data;
+    },
 };
 
 export const prescriptionService = {
@@ -99,6 +111,12 @@ export const prescriptionService = {
     // Review prescription (Pharmacist)
     reviewPrescription: async (id, data) => {
         const response = await api.patch(`/prescriptions/${id}/review`, data);
+        return response.data;
+    },
+
+    // Confirm prescription (Customer)
+    confirmPrescriptionOrder: async (id) => {
+        const response = await api.patch(`/prescriptions/${id}/confirm`);
         return response.data;
     },
 };

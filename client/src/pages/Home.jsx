@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom';
-import { ShoppingBag, Pill, Users, Shield, User, LogOut } from 'lucide-react';
+import { useCart } from '../context/CartContext';
+import { ShoppingBag, Pill, Users, Shield, User, LogOut, ShoppingCart } from 'lucide-react';
 import { authService } from '../services/api.service';
 import toast from 'react-hot-toast';
 
 function Home() {
     const user = authService.getCurrentUser();
+    const { getCartCount } = useCart();
 
     const handleLogout = () => {
         authService.logout();
@@ -35,6 +37,17 @@ function Home() {
                             >
                                 Products
                             </Link>
+
+                            {/* Cart Icon with Badge */}
+                            <Link to="/cart" className="relative p-2 text-gray-700 hover:text-blue-600 transition-colors">
+                                <ShoppingCart className="w-6 h-6" />
+                                {getCartCount() > 0 && (
+                                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center shadow-sm">
+                                        {getCartCount()}
+                                    </span>
+                                )}
+                            </Link>
+
                             {user ? (
                                 <div className="flex items-center space-x-6">
                                     <Link

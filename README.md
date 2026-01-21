@@ -260,7 +260,7 @@ This project is licensed under the MIT License.
 
 ## 👨‍💻 Author
 
-**Viduz Pharmacy Development Team**
+**Vidusha Puswalkatiya**
 
 ## 🙏 Acknowledgments
 
@@ -270,4 +270,4 @@ This project is licensed under the MIT License.
 
 ---
 
-**Note**: This is an academic project for BSc final year. The delivery rider module is planned for future development.
+**Note**: This is a University academic Final project for BSc final year. The delivery rider module is planned for future development.

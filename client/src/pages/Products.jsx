@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { productService, authService } from '../services/api.service';
+import { useCart } from '../context/CartContext';
 import toast from 'react-hot-toast';
-import { Search, ShoppingCart, User, LogOut } from 'lucide-react';
+import { Search, ShoppingCart, User, LogOut, FileText, CheckCircle } from 'lucide-react';
 
 function Products() {
     const navigate = useNavigate();
+    const { addToCart, getCartCount } = useCart();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
@@ -40,7 +42,7 @@ function Products() {
             return;
         }
 
-        if (user.role !== 'customer') {
+        if (user.role?.toUpperCase() !== 'CUSTOMER') {
             toast.error('Only customers can buy products');
             return;
         }
@@ -51,7 +53,7 @@ function Products() {
             return;
         }
 
-        toast.success(`${product.name} added to cart!`);
+        addToCart(product);
     };
 
     const handleLogout = () => {
@@ -70,7 +72,7 @@ function Products() {
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Navigation */}
-            <nav className="bg-white shadow-sm border-b">
+            <nav className="bg-white shadow-sm border-b sticky top-0 z-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
                         <Link to="/" className="text-2xl font-bold text-blue-600 flex items-center">
@@ -80,6 +82,17 @@ function Products() {
                             <Link to="/" className="text-gray-700 hover:text-blue-600 font-medium">
                                 Home
                             </Link>
+
+                            {/* Cart Icon with Badge */}
+                            <Link to="/cart" className="relative p-2 text-gray-700 hover:text-blue-600 transition-colors">
+                                <ShoppingCart className="w-6 h-6" />
+                                {getCartCount() > 0 && (
+                                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center shadow-sm">
+                                        {getCartCount()}
+                                    </span>
+                                )}
+                            </Link>
+
                             {user ? (
                                 <>
                                     <Link to={getDashboardLink()} className="text-gray-700 hover:text-blue-600 font-medium flex items-center">
@@ -189,8 +202,8 @@ function Products() {
                                         onClick={() => handleAddToCart(product)}
                                         disabled={product.stock <= 0}
                                         className={`w-full py-3 px-4 rounded-xl font-bold transition-all duration-300 flex items-center justify-center space-x-2 ${product.stock <= 0
-                                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                                : 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg active:scale-95'
+                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                            : 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg active:scale-95'
                                             }`}
                                     >
                                         <ShoppingCart className="w-5 h-5" />
@@ -207,8 +220,5 @@ function Products() {
         </div>
     );
 }
-
-// Add missing icons from lucide-react
-import { FileText, CheckCircle } from 'lucide-react';
 
 export default Products;
