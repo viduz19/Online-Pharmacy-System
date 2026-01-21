@@ -7,6 +7,8 @@ import UploadPrescription from '../pages/UploadPrescription';
 import CustomerDashboard from '../pages/CustomerDashboard';
 import PharmacistDashboard from '../pages/PharmacistDashboard';
 import AdminDashboard from '../pages/AdminDashboard';
+import AdminProducts from '../pages/AdminProducts';
+import AdminUsers from '../pages/AdminUsers';
 
 const NotFound = () => (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -35,6 +37,8 @@ function AppRoutes() {
 
             {/* Admin Routes */}
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/products" element={<AdminProducts />} />
+            <Route path="/admin/users" element={<AdminUsers />} />
 
             {/* 404 */}
             <Route path="*" element={<NotFound />} />
