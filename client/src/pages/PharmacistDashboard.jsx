@@ -1,63 +1,35 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authService } from '../services/api.service';
+import { authService, prescriptionService, orderService } from '../services/api.service';
 import toast from 'react-hot-toast';
-import { FileText, CheckCircle, XCircle, DollarSign, LogOut, Package, Eye } from 'lucide-react';
+import { FileText, CheckCircle, XCircle, DollarSign, LogOut, Package, Eye, RefreshCw } from 'lucide-react';
 
 function PharmacistDashboard() {
     const navigate = useNavigate();
     const user = authService.getCurrentUser() || { firstName: 'Pharmacist' };
+    const [pendingPrescriptions, setPendingPrescriptions] = useState([]);
+    const [orders, setOrders] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    // Dummy Pending Prescriptions Data
-    const [pendingPrescriptions, setPendingPrescriptions] = useState([
-        {
-            _id: '1',
-            customer: {
-                firstName: 'Kasun',
-                lastName: 'Perera',
-                email: 'kasun.perera@gmail.com',
-                phone: '+94771234567'
-            },
-            requestedMedicines: [
-                { productName: 'Amoxicillin 500mg', quantity: 10, notes: 'Take after meals' },
-                { productName: 'Azithromycin 500mg', quantity: 6, notes: '3-day course' }
-            ],
-            prescriptionFiles: ['prescription1.pdf', 'prescription2.jpg'],
-            customerNotes: 'Need urgently. Please deliver in the evening after 5 PM.',
-            createdAt: '2026-01-21T09:00:00Z'
-        },
-        {
-            _id: '2',
-            customer: {
-                firstName: 'Nimal',
-                lastName: 'Silva',
-                email: 'nimal.silva@gmail.com',
-                phone: '+94712345678'
-            },
-            requestedMedicines: [
-                { productName: 'Metformin 500mg', quantity: 30, notes: 'For diabetes' }
-            ],
-            prescriptionFiles: ['prescription3.pdf'],
-            customerNotes: '',
-            createdAt: '2026-01-21T10:30:00Z'
-        },
-        {
-            _id: '3',
-            customer: {
-                firstName: 'Saman',
-                lastName: 'Fernando',
-                email: 'saman.fernando@gmail.com',
-                phone: '+94773456789'
-            },
-            requestedMedicines: [
-                { productName: 'Amlodipine 5mg', quantity: 20, notes: 'Blood pressure medication' },
-                { productName: 'Atorvastatin 10mg', quantity: 30, notes: 'Cholesterol' }
-            ],
-            prescriptionFiles: ['prescription4.jpg'],
-            customerNotes: 'Regular customer',
-            createdAt: '2026-01-20T14:20:00Z'
+    useEffect(() => {
+        fetchAllData();
+    }, []);
+
+    const fetchAllData = async () => {
+        try {
+            const [prescRes, orderRes] = await Promise.all([
+                prescriptionService.getPendingPrescriptions(),
+                orderService.getAllOrders()
+            ]);
+            if (prescRes.success) setPendingPrescriptions(prescRes.data || []);
+            if (orderRes.success) setOrders(orderRes.data || []);
+        } catch (error) {
+            console.error('Error fetching dashboard data:', error);
+            toast.error('Failed to load dashboard data');
+        } finally {
+            setLoading(false);
         }
-    ]);
+    };
 
     const [selectedPrescription, setSelectedPrescription] = useState(null);
     const [reviewData, setReviewData] = useState({
@@ -75,7 +47,7 @@ function PharmacistDashboard() {
             quantity: med.quantity,
             price: 0,
         }));
-        setReviewData({ ...reviewData, items, status: 'APPROVED' });
+        setReviewData({ ...reviewData, items, status: 'APPROVED', reviewNotes: '', rejectionReason: '' });
     };
 
     const handleItemChange = (index, field, value) => {
@@ -89,9 +61,14 @@ function PharmacistDashboard() {
         return itemsTotal + reviewData.deliveryFee;
     };
 
-    const handleSubmitReview = () => {
+    const handleSubmitReview = async () => {
         if (reviewData.status === 'REJECTED' && !reviewData.rejectionReason) {
             toast.error('Please provide a rejection reason');
+            return;
+        }
+
+        if (reviewData.status === 'RE_UPLOAD_REQUESTED' && !reviewData.reviewNotes) {
+            toast.error('Please explain why a re-upload is needed in notes');
             return;
         }
 
@@ -100,9 +77,30 @@ function PharmacistDashboard() {
             return;
         }
 
-        setPendingPrescriptions(pendingPrescriptions.filter(p => p._id !== selectedPrescription._id));
-        toast.success(`Prescription ${reviewData.status.toLowerCase()} successfully!`);
-        setSelectedPrescription(null);
+        try {
+            const payload = {
+                status: reviewData.status,
+                reviewNotes: reviewData.reviewNotes,
+            };
+
+            if (reviewData.status === 'APPROVED') {
+                payload.items = reviewData.items;
+                payload.deliveryFee = reviewData.deliveryFee;
+                payload.totalAmount = calculateTotal();
+            } else if (reviewData.status === 'REJECTED') {
+                payload.rejectionReason = reviewData.rejectionReason;
+            }
+
+            const response = await prescriptionService.reviewPrescription(selectedPrescription._id, payload);
+
+            if (response.success) {
+                toast.success(`Prescription ${reviewData.status.toLowerCase().replace(/_/g, ' ')} successfully!`);
+                setSelectedPrescription(null);
+                fetchAllData();
+            }
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Failed to submit review');
+        }
     };
 
     const handleLogout = () => {
@@ -161,7 +159,9 @@ function PharmacistDashboard() {
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm text-gray-600">Orders to Prepare</p>
-                                <p className="text-3xl font-bold text-gray-900">5</p>
+                                <p className="text-3xl font-bold text-gray-900">
+                                    {orders.filter(o => ['PAID', 'PREPARING'].includes(o.status)).length}
+                                </p>
                             </div>
                             <Package className="w-12 h-12 text-blue-600" />
                         </div>
@@ -174,8 +174,10 @@ function PharmacistDashboard() {
                     >
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm text-gray-600">Completed Today</p>
-                                <p className="text-3xl font-bold text-gray-900">12</p>
+                                <p className="text-sm text-gray-600">Completed Recently</p>
+                                <p className="text-3xl font-bold text-gray-900">
+                                    {orders.filter(o => o.status === 'DELIVERED').length}
+                                </p>
                             </div>
                             <CheckCircle className="w-12 h-12 text-green-600" />
                         </div>
@@ -201,18 +203,18 @@ function PharmacistDashboard() {
                                         <div className="flex-1">
                                             <div className="flex items-center space-x-2 mb-2">
                                                 <p className="font-semibold text-gray-900 text-lg">
-                                                    {prescription.customer.firstName} {prescription.customer.lastName}
+                                                    {prescription.customer?.firstName} {prescription.customer?.lastName}
                                                 </p>
                                                 <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-medium">
                                                     New
                                                 </span>
                                             </div>
-                                            <p className="text-sm text-gray-600">{prescription.customer.email}</p>
-                                            <p className="text-sm text-gray-600">{prescription.customer.phone}</p>
+                                            <p className="text-sm text-gray-600">{prescription.customer?.email}</p>
+                                            <p className="text-sm text-gray-600">{prescription.customer?.phone}</p>
 
                                             <div className="mt-3 bg-gray-50 rounded-lg p-3">
                                                 <p className="text-sm font-medium text-gray-900 mb-2">Requested Medicines:</p>
-                                                {prescription.requestedMedicines.map((med, idx) => (
+                                                {(prescription.requestedMedicines || []).map((med, idx) => (
                                                     <div key={idx} className="text-sm text-gray-700 mb-1">
                                                         <span className="font-medium">• {med.productName}</span> - Qty: {med.quantity}
                                                         {med.notes && <span className="text-gray-500 italic"> ({med.notes})</span>}
@@ -223,15 +225,15 @@ function PharmacistDashboard() {
                                             <div className="mt-3 flex items-center space-x-4 text-sm text-gray-600">
                                                 <span className="flex items-center">
                                                     <FileText className="w-4 h-4 mr-1" />
-                                                    {prescription.prescriptionFiles.length} file(s)
+                                                    {(prescription.files || []).length} file(s)
                                                 </span>
                                                 <span>
-                                                    {new Date(prescription.createdAt).toLocaleString('en-US', {
+                                                    {prescription.createdAt ? new Date(prescription.createdAt).toLocaleString('en-US', {
                                                         month: 'short',
                                                         day: 'numeric',
                                                         hour: '2-digit',
                                                         minute: '2-digit'
-                                                    })}
+                                                    }) : 'N/A'}
                                                 </span>
                                             </div>
 
@@ -244,16 +246,21 @@ function PharmacistDashboard() {
                                         </div>
 
                                         <div className="ml-4 flex flex-col space-y-2">
-                                            <button
-                                                onClick={() => toast.info('Viewing prescription files')}
-                                                className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors flex items-center space-x-2"
-                                            >
-                                                <Eye className="w-4 h-4" />
-                                                <span>View Files</span>
-                                            </button>
+                                            {(prescription.files || []).map((file, fIdx) => (
+                                                <a
+                                                    key={fIdx}
+                                                    href={`http://localhost:5000/uploads/prescriptions/${file.filename}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-200 transition-colors flex items-center space-x-2 text-xs"
+                                                >
+                                                    <Eye className="w-3.5 h-3.5" />
+                                                    <span>View {(file.originalName || 'File').length > 15 ? (file.originalName || 'File').substring(0, 12) + '...' : (file.originalName || 'File')}</span>
+                                                </a>
+                                            ))}
                                             <button
                                                 onClick={() => handleReviewPrescription(prescription)}
-                                                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+                                                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2 shadow-sm"
                                             >
                                                 <DollarSign className="w-4 h-4" />
                                                 <span>Review & Price</span>
@@ -264,6 +271,72 @@ function PharmacistDashboard() {
                             ))}
                         </div>
                     )}
+                    {/* Recent Orders Section */}
+                    <div className="bg-white rounded-lg shadow-md p-6 mt-8">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-xl font-bold text-gray-900">Recent Customer Orders</h3>
+                            <button
+                                onClick={() => toast.info('Viewing all orders')}
+                                className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                            >
+                                View All Orders →
+                            </button>
+                        </div>
+
+                        {orders.length === 0 ? (
+                            <div className="text-center py-8">
+                                <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                                <p className="text-gray-500">No orders found</p>
+                            </div>
+                        ) : (
+                            <div className="overflow-x-auto">
+                                <table className="min-w-full divide-y divide-gray-200">
+                                    <thead className="bg-gray-50">
+                                        <tr>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order Info</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="bg-white divide-y divide-gray-200">
+                                        {orders.slice(0, 10).map((order) => (
+                                            <tr key={order._id}>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="text-sm font-medium text-gray-900">{order.orderNumber}</div>
+                                                    <div className="text-xs text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</div>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="text-sm text-gray-900">{order.customer?.firstName} {order.customer?.lastName}</div>
+                                                    <div className="text-xs text-gray-500">{order.customer?.phone}</div>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                    Rs. {order.total.toLocaleString()}
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                                    ${order.status === 'PAID' ? 'bg-green-100 text-green-800' :
+                                                            order.status === 'PREPARING' ? 'bg-blue-100 text-blue-800' :
+                                                                'bg-gray-100 text-gray-800'}`}>
+                                                        {order.status}
+                                                    </span>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                    <button
+                                                        onClick={() => toast.info(`Viewing details for ${order.orderNumber}`)}
+                                                        className="text-blue-600 hover:text-blue-900"
+                                                    >
+                                                        View Details
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 
@@ -274,38 +347,67 @@ function PharmacistDashboard() {
                         <div className="p-6">
                             <h3 className="text-2xl font-bold text-gray-900 mb-4">Review Prescription</h3>
 
-                            {/* Customer Info */}
-                            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 mb-6">
-                                <h4 className="font-semibold text-gray-900 mb-2">Customer Information</h4>
-                                <p className="text-sm text-gray-700">
-                                    {selectedPrescription.customer.firstName} {selectedPrescription.customer.lastName}
-                                </p>
-                                <p className="text-sm text-gray-600">{selectedPrescription.customer.email}</p>
-                                <p className="text-sm text-gray-600">{selectedPrescription.customer.phone}</p>
+                            {/* Customer Info & Prescriptions */}
+                            <div className="grid grid-cols-2 gap-6 mb-6">
+                                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4">
+                                    <h4 className="font-semibold text-gray-900 mb-2 font-poppins">Customer Information</h4>
+                                    <p className="text-sm text-gray-700">
+                                        {selectedPrescription.customer.firstName} {selectedPrescription.customer.lastName}
+                                    </p>
+                                    <p className="text-sm text-gray-600 font-poppins">{selectedPrescription.customer.email}</p>
+                                    <p className="text-sm text-gray-600 font-poppins">{selectedPrescription.customer.phone}</p>
+                                </div>
+                                <div className="bg-gray-50 rounded-lg p-4">
+                                    <h4 className="font-semibold text-gray-900 mb-2 font-poppins">Prescription Files</h4>
+                                    <div className="space-y-2">
+                                        {selectedPrescription.files && selectedPrescription.files.map((file, idx) => (
+                                            <a
+                                                key={idx}
+                                                href={`http://localhost:5000/uploads/prescriptions/${file.filename}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-sm text-blue-600 hover:underline flex items-center"
+                                            >
+                                                <FileText className="w-4 h-4 mr-2" />
+                                                {file.originalName}
+                                            </a>
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
 
                             {/* Review Type */}
                             <div className="mb-6">
                                 <label className="block text-sm font-medium text-gray-700 mb-2">Decision</label>
-                                <div className="flex space-x-4">
+                                <div className="grid grid-cols-3 gap-4">
                                     <button
                                         onClick={() => setReviewData({ ...reviewData, status: 'APPROVED' })}
-                                        className={`flex-1 py-3 rounded-lg font-medium transition-all ${reviewData.status === 'APPROVED'
-                                                ? 'bg-green-600 text-white shadow-lg'
-                                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                        className={`py-3 rounded-lg font-medium transition-all flex items-center justify-center ${reviewData.status === 'APPROVED'
+                                            ? 'bg-green-600 text-white shadow-lg'
+                                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                                             }`}
                                     >
-                                        <CheckCircle className="w-5 h-5 inline mr-2" />
-                                        Approve & Set Price
+                                        <CheckCircle className="w-5 h-5 mr-2" />
+                                        Approve
+                                    </button>
+                                    <button
+                                        onClick={() => setReviewData({ ...reviewData, status: 'RE_UPLOAD_REQUESTED' })}
+                                        className={`py-3 rounded-lg font-medium transition-all flex items-center justify-center ${reviewData.status === 'RE_UPLOAD_REQUESTED'
+                                            ? 'bg-blue-600 text-white shadow-lg'
+                                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                            }`}
+                                    >
+                                        <RefreshCw className="w-5 h-5 mr-2" />
+                                        Request Re-upload
                                     </button>
                                     <button
                                         onClick={() => setReviewData({ ...reviewData, status: 'REJECTED' })}
-                                        className={`flex-1 py-3 rounded-lg font-medium transition-all ${reviewData.status === 'REJECTED'
-                                                ? 'bg-red-600 text-white shadow-lg'
-                                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                        className={`py-3 rounded-lg font-medium transition-all flex items-center justify-center ${reviewData.status === 'REJECTED'
+                                            ? 'bg-red-600 text-white shadow-lg'
+                                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                                             }`}
                                     >
-                                        <XCircle className="w-5 h-5 inline mr-2" />
+                                        <XCircle className="w-5 h-5 mr-2" />
                                         Reject
                                     </button>
                                 </div>

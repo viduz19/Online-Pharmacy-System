@@ -9,6 +9,8 @@ import PharmacistDashboard from '../pages/PharmacistDashboard';
 import AdminDashboard from '../pages/AdminDashboard';
 import AdminProducts from '../pages/AdminProducts';
 import AdminUsers from '../pages/AdminUsers';
+import Cart from '../pages/Cart';
+import Checkout from '../pages/Checkout';
 
 const NotFound = () => (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -27,6 +29,8 @@ function AppRoutes() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/products" element={<Products />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/checkout/:orderId" element={<Checkout />} />
 
             {/* Customer Routes */}
             <Route path="/customer/dashboard" element={<CustomerDashboard />} />
