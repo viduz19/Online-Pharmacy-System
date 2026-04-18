@@ -160,7 +160,21 @@ function Products() {
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                         {products.map((product) => (
-                            <div key={product._id} className="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 group">
+                            <div key={product._id} className="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 group overflow-hidden">
+                                {/* Product Image */}
+                                <div className="h-48 bg-gray-100 relative overflow-hidden">
+                                    {product.images?.[0] ? (
+                                        <img
+                                            src={product.images[0].url}
+                                            alt={product.name}
+                                            className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                            <Pill className="w-12 h-12" />
+                                        </div>
+                                    )}
+                                </div>
                                 <div className="p-6">
                                     {/* Product Badge */}
                                     <div className="flex justify-between items-start mb-4">

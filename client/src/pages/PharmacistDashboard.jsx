@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { authService, prescriptionService, orderService } from '../services/api.service';
 import toast from 'react-hot-toast';
-import { FileText, CheckCircle, XCircle, DollarSign, LogOut, Package, Eye, RefreshCw } from 'lucide-react';
+import { FileText, CheckCircle, XCircle, DollarSign, LogOut, Package, Eye, RefreshCw, ClipboardList, MessageCircle } from 'lucide-react';
+import WhatsAppButton from '../components/WhatsAppButton';
 
 function PharmacistDashboard() {
     const navigate = useNavigate();
@@ -103,31 +104,9 @@ function PharmacistDashboard() {
         }
     };
 
-    const handleLogout = () => {
-        authService.logout();
-        navigate('/login');
-        toast.success('Logged out successfully');
-    };
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Navigation */}
-            <nav className="bg-white shadow-sm">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
-                        <h1 className="text-2xl font-bold text-blue-600">🏥 Viduz Pharmacy - Pharmacist</h1>
-                        <button
-                            onClick={handleLogout}
-                            className="flex items-center space-x-2 text-gray-700 hover:text-red-600 transition-colors"
-                        >
-                            <LogOut className="w-5 h-5" />
-                            <span>Logout</span>
-                        </button>
-                    </div>
-                </div>
-            </nav>
-
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="space-y-8">
                 {/* Welcome Section */}
                 <div className="bg-gradient-to-r from-green-600 to-teal-600 rounded-lg shadow-lg p-8 text-white mb-8">
                     <h2 className="text-3xl font-bold mb-2">
@@ -185,6 +164,18 @@ function PharmacistDashboard() {
                     </button>
                 </div>
 
+                {/* Quick Actions */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <Link
+                        to="/admin/products"
+                        className="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-all transform hover:scale-105 text-center flex flex-col items-center justify-center border-t-4 border-blue-500"
+                    >
+                        <Package className="w-10 h-10 text-blue-600 mb-3" />
+                        <h3 className="font-bold text-gray-900">Manage Medicines</h3>
+                        <p className="text-xs text-gray-500 mt-1">Add or edit inventory</p>
+                    </Link>
+                </div>
+
                 {/* Pending Prescriptions */}
                 <div className="bg-white rounded-lg shadow-md p-6">
                     <h3 className="text-xl font-bold text-gray-900 mb-6">Pending Prescription Reviews</h3>
@@ -203,7 +194,7 @@ function PharmacistDashboard() {
                                         <div className="flex-1">
                                             <div className="flex items-center space-x-2 mb-2">
                                                 <p className="font-semibold text-gray-900 text-lg">
-                                                    {prescription.customer?.firstName} {prescription.customer?.lastName}
+                                                    {prescription?.customer?.firstName} {prescription?.customer?.lastName}
                                                 </p>
                                                 <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-medium">
                                                     New
@@ -265,6 +256,12 @@ function PharmacistDashboard() {
                                                 <DollarSign className="w-4 h-4" />
                                                 <span>Review & Price</span>
                                             </button>
+                                            
+                                            <WhatsAppButton 
+                                                phone={prescription.customer?.phone} 
+                                                message={`Hello ${prescription.customer?.firstName}, I am reviewing your prescription at Viduz Pharmacy. I have some updates regarding your medicine availability.`}
+                                                label="Contact Customer"
+                                            />
                                         </div>
                                     </div>
                                 </div>
@@ -308,11 +305,11 @@ function PharmacistDashboard() {
                                                     <div className="text-xs text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm text-gray-900">{order.customer?.firstName} {order.customer?.lastName}</div>
-                                                    <div className="text-xs text-gray-500">{order.customer?.phone}</div>
+                                                    <div className="text-sm text-gray-900">{order?.customer?.firstName} {order?.customer?.lastName}</div>
+                                                    <div className="text-xs text-gray-500">{order?.customer?.phone}</div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                    Rs. {order.total.toLocaleString()}
+                                                    Rs. {(order?.total || 0).toLocaleString()}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
@@ -323,12 +320,19 @@ function PharmacistDashboard() {
                                                     </span>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                    <button
-                                                        onClick={() => toast.info(`Viewing details for ${order.orderNumber}`)}
-                                                        className="text-blue-600 hover:text-blue-900"
-                                                    >
-                                                        View Details
-                                                    </button>
+                                                    <div className="flex flex-col space-y-2">
+                                                        <button
+                                                            onClick={() => toast.info(`Viewing details for ${order.orderNumber}`)}
+                                                            className="text-blue-600 hover:text-blue-900 text-sm font-medium"
+                                                        >
+                                                            View Details
+                                                        </button>
+                                                        <WhatsAppButton 
+                                                            phone={order.customer?.phone} 
+                                                            message={`Hi ${order.customer?.firstName}, this is Viduz Pharmacy. Your order ${order.orderNumber} is being prepared!`}
+                                                            label="WhatsApp"
+                                                        />
+                                                    </div>
                                                 </td>
                                             </tr>
                                         ))}
@@ -338,7 +342,6 @@ function PharmacistDashboard() {
                         )}
                     </div>
                 </div>
-            </div>
 
             {/* Review Modal */}
             {selectedPrescription && (
@@ -440,7 +443,7 @@ function PharmacistDashboard() {
                                                 <div className="text-right">
                                                     <p className="text-xs text-gray-600 mb-1">Subtotal</p>
                                                     <p className="text-lg font-semibold text-gray-900">
-                                                        Rs. {(item.price * item.quantity).toLocaleString()}
+                                                        Rs. {((item?.price || 0) * (item?.quantity || 1)).toLocaleString()}
                                                     </p>
                                                 </div>
                                             </div>
@@ -459,7 +462,7 @@ function PharmacistDashboard() {
                                         </div>
                                         <div className="flex justify-between items-center text-xl font-bold pt-3 border-t">
                                             <span className="text-gray-900">Total Amount:</span>
-                                            <span className="text-green-600">Rs. {calculateTotal().toLocaleString()}</span>
+                                            <span className="text-green-600">Rs. {(calculateTotal() || 0).toLocaleString()}</span>
                                         </div>
                                     </div>
                                 </div>

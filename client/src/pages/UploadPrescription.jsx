@@ -122,22 +122,8 @@ function UploadPrescription() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8">
-            {/* Navigation */}
-            <nav className="bg-white shadow-sm mb-8">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
-                        <Link to="/customer/dashboard" className="text-2xl font-bold text-blue-600">
-                            🏥 Viduz Pharmacy
-                        </Link>
-                        <Link to="/customer/dashboard" className="text-gray-700 hover:text-blue-600">
-                            ← Back to Dashboard
-                        </Link>
-                    </div>
-                </div>
-            </nav>
-
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="space-y-8">
+            <div className="max-w-4xl mx-auto">
                 <div className="bg-white rounded-2xl shadow-xl p-8">
                     {/* Header */}
                     <div className="mb-8">

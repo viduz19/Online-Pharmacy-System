@@ -8,27 +8,31 @@ function AdminUsers() {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    const [customers, setCustomers] = useState([]);
+    const [pharmacists, setPharmacists] = useState([]);
+
     useEffect(() => {
-        // In a real app, we'd have adminService.getAllUsers()
-        // For now we'll fetch stats and try to show the status numbers
-        setLoading(true);
-        // Dummy user list for visualization
-        setUsers([
-            { _id: '1', firstName: 'Admin', lastName: 'User', email: 'admin@viduzpharmacy.lk', role: 'admin', status: 'active' },
-            { _id: '2', firstName: 'John', lastName: 'Doe', email: 'john.doe@gmail.com', role: 'customer', status: 'active' },
-            { _id: '3', firstName: 'Nimal', lastName: 'Silva', email: 'nimal.silva@pharmacy.lk', role: 'pharmacist', status: 'pending' },
-        ]);
-        setLoading(false);
+        fetchUsers();
     }, []);
 
+    const fetchUsers = async () => {
+        setLoading(true);
+        try {
+            const [custRes, pharmRes] = await Promise.all([
+                adminService.getAllCustomers(),
+                adminService.getAllPharmacists()
+            ]);
+            if (custRes.success) setCustomers(custRes.data);
+            if (pharmRes.success) setPharmacists(pharmRes.data);
+        } catch (error) {
+            toast.error('Failed to load users');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
-        <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-7xl mx-auto">
-                <div className="flex items-center space-x-2 text-sm text-gray-500 mb-6">
-                    <Link to="/admin/dashboard" className="hover:text-blue-600 flex items-center">
-                        <ArrowLeft className="w-4 h-4 mr-1" /> Back to Dashboard
-                    </Link>
-                </div>
+        <div className="space-y-8">
 
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                     <div>
@@ -40,51 +44,81 @@ function AdminUsers() {
                     </div>
                 </div>
 
-                <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left">
-                            <thead className="bg-gray-50 border-b border-gray-100">
-                                <tr>
-                                    <th className="px-6 py-4 text-sm font-bold text-gray-700">User</th>
-                                    <th className="px-6 py-4 text-sm font-bold text-gray-700">Email</th>
-                                    <th className="px-6 py-4 text-sm font-bold text-gray-700">Role</th>
-                                    <th className="px-6 py-4 text-sm font-bold text-gray-700">Status</th>
-                                    <th className="px-6 py-4 text-sm font-bold text-gray-700 text-right">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-50">
-                                {users.map((user) => (
-                                    <tr key={user._id} className="hover:bg-blue-50/30 transition-colors">
-                                        <td className="px-6 py-4 capitalize font-semibold text-gray-900">
-                                            {user.firstName} {user.lastName}
-                                        </td>
-                                        <td className="px-6 py-4 text-sm text-gray-600">{user.email}</td>
-                                        <td className="px-6 py-4">
-                                            <span className={`text-xs font-bold px-2 py-1 rounded inline-flex items-center ${user.role === 'admin' ? 'bg-purple-100 text-purple-700' :
-                                                    user.role === 'pharmacist' ? 'bg-indigo-100 text-indigo-700' : 'bg-blue-100 text-blue-700'
-                                                }`}>
-                                                {user.role === 'admin' && <Shield className="w-3 h-3 mr-1" />}
-                                                {user.role}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <span className={`text-xs font-bold px-2 py-1 rounded-full ${user.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
-                                                }`}>
-                                                {user.status}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 text-right">
-                                            <button className="text-blue-600 hover:text-blue-800 font-medium text-sm mr-4">Edit</button>
-                                            <button className="text-red-600 hover:text-red-800 font-medium text-sm">Suspend</button>
-                                        </td>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {/* Customers Table */}
+                    <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
+                        <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+                            <h2 className="font-bold text-gray-900 text-lg">Customers</h2>
+                            <span className="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-1 rounded-full">{customers.length}</span>
+                        </div>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left">
+                                <thead className="bg-gray-50 border-b border-gray-100">
+                                    <tr>
+                                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Customer</th>
+                                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Contact</th>
+                                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase text-right">Actions</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody className="divide-y divide-gray-50">
+                                    {!customers || customers.length === 0 ? (
+                                        <tr><td colSpan="3" className="px-6 py-8 text-center text-gray-400">No customers found</td></tr>
+                                    ) : customers?.map((customer) => (
+                                        <tr key={customer._id} className="hover:bg-blue-50/20 transition-colors">
+                                            <td className="px-6 py-4">
+                                                <div className="font-bold text-gray-900">{customer.firstName} {customer.lastName}</div>
+                                                <div className="text-xs text-gray-500">{customer.email}</div>
+                                            </td>
+                                            <td className="px-6 py-4 text-sm text-gray-600">{customer.phone}</td>
+                                            <td className="px-6 py-4 text-right">
+                                                <button className="text-blue-600 hover:text-blue-800 font-medium text-sm">View</button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {/* Pharmacists Table */}
+                    <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
+                        <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+                            <h2 className="font-bold text-gray-900 text-lg">Pharmacists</h2>
+                            <span className="bg-green-100 text-green-800 text-xs font-bold px-2.5 py-1 rounded-full">{pharmacists.length}</span>
+                        </div>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left">
+                                <thead className="bg-gray-50 border-b border-gray-100">
+                                    <tr>
+                                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Pharmacist</th>
+                                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Branch / License</th>
+                                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-50">
+                                    {!pharmacists || pharmacists.length === 0 ? (
+                                        <tr><td colSpan="3" className="px-6 py-8 text-center text-gray-400">No pharmacists found</td></tr>
+                                    ) : pharmacists?.map((pharm) => (
+                                        <tr key={pharm._id} className="hover:bg-green-50/20 transition-colors">
+                                            <td className="px-6 py-4">
+                                                <div className="font-bold text-gray-900">{pharm.user?.firstName} {pharm.user?.lastName}</div>
+                                                <div className="text-xs text-gray-500">{pharm.user?.email}</div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="text-sm text-gray-900 font-medium">{pharm.pharmacyBranch}</div>
+                                                <div className="text-xs text-gray-500">{pharm.licenseNumber}</div>
+                                            </td>
+                                            <td className="px-6 py-4 text-right">
+                                                <button className="text-green-600 hover:text-green-800 font-medium text-sm">Review</button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
     );
 }
 

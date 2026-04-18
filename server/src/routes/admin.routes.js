@@ -10,6 +10,9 @@ import {
     updateCategory,
     deleteCategory,
     getCategories,
+    getSalesReport,
+    getAllPharmacists,
+    getAllCustomers,
 } from '../controllers/admin.controller.js';
 import { protect, authorize } from '../middleware/auth.middleware.js';
 
@@ -21,22 +24,19 @@ router.use(authorize('ADMIN'));
 
 // Pharmacist management
 router.get('/pharmacists/pending', getPendingPharmacists);
+router.get('/pharmacists', getAllPharmacists);
 router.patch('/pharmacists/:id/approval', updatePharmacistApproval);
 
 // User management
 router.get('/users', getAllUsers);
+router.get('/customers', getAllCustomers);
 router.patch('/users/:id/status', updateUserStatus);
 
 // Dashboard
 router.get('/dashboard/stats', getDashboardStats);
+router.get('/reports/sales', getSalesReport);
 
 // Audit logs
 router.get('/audit-logs', getAuditLogsController);
-
-// Category management
-router.get('/categories', getCategories);
-router.post('/categories', createCategory);
-router.put('/categories/:id', updateCategory);
-router.delete('/categories/:id', deleteCategory);
 
 export default router;

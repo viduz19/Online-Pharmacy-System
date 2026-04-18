@@ -16,8 +16,9 @@ function Home() {
 
     const getDashboardLink = () => {
         if (!user) return '/login';
-        if (user.role === 'admin') return '/admin/dashboard';
-        if (user.role === 'pharmacist') return '/pharmacist/dashboard';
+        const role = user.role?.toUpperCase();
+        if (role === 'ADMIN') return '/admin/dashboard';
+        if (role === 'PHARMACIST') return '/pharmacist/dashboard';
         return '/customer/dashboard';
     };
 

@@ -35,11 +35,6 @@ function CustomerDashboard() {
         }
     };
 
-    const handleLogout = () => {
-        authService.logout();
-        navigate('/login');
-        toast.success('Logged out successfully');
-    };
 
     const getStatusColor = (status) => {
         const colors = {
@@ -117,36 +112,6 @@ function CustomerDashboard() {
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Navigation */}
-            <nav className="bg-white shadow-sm sticky top-0 z-50">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
-                        <Link to="/" className="text-2xl font-bold text-blue-600">🏥 Viduz Pharmacy</Link>
-                        <div className="flex items-center space-x-6">
-                            <Link to="/products" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
-                                Products
-                            </Link>
-
-                            {/* Cart Icon with Badge */}
-                            <Link to="/cart" className="relative p-2 text-gray-700 hover:text-blue-600 transition-colors">
-                                <ShoppingCart className="w-6 h-6" />
-                                {getCartCount() > 0 && (
-                                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center shadow-sm">
-                                        {getCartCount()}
-                                    </span>
-                                )}
-                            </Link>
-                            <button
-                                onClick={handleLogout}
-                                className="flex items-center space-x-2 text-gray-700 hover:text-red-600 transition-colors"
-                            >
-                                <LogOut className="w-5 h-5" />
-                                <span>Logout</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </nav>
-
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Welcome Section */}
                 <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg shadow-lg p-8 text-white mb-8">
@@ -250,7 +215,7 @@ function CustomerDashboard() {
                                     <h4 className="font-bold text-blue-900 mb-4">Order Summary</h4>
                                     <div className="flex justify-between text-blue-800 mb-2">
                                         <span>Subtotal</span>
-                                        <span>Rs. {getCartTotal().toLocaleString()}</span>
+                                        <span>Rs. {(getCartTotal() || 0).toLocaleString()}</span>
                                     </div>
                                     <div className="flex justify-between text-blue-800 mb-4">
                                         <span>Delivery Fee</span>
@@ -258,7 +223,7 @@ function CustomerDashboard() {
                                     </div>
                                     <div className="flex justify-between text-lg font-bold text-blue-900 border-t border-blue-200 pt-3">
                                         <span>Total</span>
-                                        <span>Rs. {(getCartTotal() + 300).toLocaleString()}</span>
+                                        <span>Rs. {((getCartTotal() || 0) + 300).toLocaleString()}</span>
                                     </div>
                                 </div>
                                 <button
@@ -313,7 +278,7 @@ function CustomerDashboard() {
                                                 ))}
                                             </div>
                                             <p className="text-sm font-medium text-gray-900 mt-2">
-                                                Total: Rs. {order.total.toLocaleString()}
+                                                Total: Rs. {(order?.total || order?.totalAmount || 0).toLocaleString()}
                                             </p>
                                             <p className="text-xs text-gray-500 mt-1">
                                                 {new Date(order.createdAt).toLocaleDateString('en-US', {
@@ -385,6 +350,20 @@ function CustomerDashboard() {
                                         </span>
                                     </div>
 
+                                    {prescription.reviewNotes && (
+                                        <div className="mt-2 mb-3 p-3 bg-blue-50 border-l-4 border-blue-400 rounded">
+                                            <p className="text-xs font-bold text-blue-800 uppercase tracking-wider mb-1">Message from Pharmacist:</p>
+                                            <p className="text-sm text-blue-700 italic">"{prescription.reviewNotes}"</p>
+                                        </div>
+                                    )}
+
+                                    {prescription.status === 'REJECTED' && prescription.rejectionReason && (
+                                        <div className="mt-2 mb-3 p-3 bg-red-50 border-l-4 border-red-400 rounded">
+                                            <p className="text-xs font-bold text-red-800 uppercase tracking-wider mb-1">Rejection Reason:</p>
+                                            <p className="text-sm text-red-700">{prescription.rejectionReason}</p>
+                                        </div>
+                                    )}
+
                                     {prescription.status === 'APPROVED' && prescription.order && (
                                         <div className="mt-3 p-4 bg-green-50 border border-green-200 rounded-lg">
                                             <div className="flex items-center justify-between">
@@ -393,7 +372,7 @@ function CustomerDashboard() {
                                                         ✓ Prescription Approved!
                                                     </p>
                                                     <p className="text-sm text-green-800 mt-1">
-                                                        Total Amount: Rs. {prescription.order.total.toLocaleString()}
+                                                        Total Amount: Rs. {(prescription?.order?.total || prescription?.order?.totalAmount || 0).toLocaleString()}
                                                     </p>
                                                 </div>
                                                 <button

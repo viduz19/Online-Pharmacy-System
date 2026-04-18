@@ -1,3 +1,4 @@
+export { default as api } from '../config/api';
 import api from '../config/api';
 
 export const authService = {
@@ -137,6 +138,24 @@ export const adminService = {
     // Approve/reject pharmacist
     updatePharmacistApproval: async (id, data) => {
         const response = await api.patch(`/admin/pharmacists/${id}/approval`, data);
+        return response.data;
+    },
+
+    // Get sales report
+    getSalesReport: async (params = {}) => {
+        const response = await api.get('/admin/reports/sales', { params });
+        return response.data;
+    },
+
+    // Get all pharmacists
+    getAllPharmacists: async (params = {}) => {
+        const response = await api.get('/admin/pharmacists', { params });
+        return response.data;
+    },
+
+    // Get all customers
+    getAllCustomers: async (params = {}) => {
+        const response = await api.get('/admin/customers', { params });
         return response.data;
     },
 };

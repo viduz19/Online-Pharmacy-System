@@ -78,11 +78,6 @@ function AdminDashboard() {
         }
     };
 
-    const handleLogout = () => {
-        authService.logout();
-        navigate('/login');
-        toast.success('Logged out successfully');
-    };
 
     if (loading) {
         return (
@@ -93,24 +88,7 @@ function AdminDashboard() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Navigation */}
-            <nav className="bg-white shadow-sm">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
-                        <h1 className="text-2xl font-bold text-blue-600">🏥 Viduz Pharmacy - Admin</h1>
-                        <button
-                            onClick={handleLogout}
-                            className="flex items-center space-x-2 text-gray-700 hover:text-red-600 transition-colors"
-                        >
-                            <LogOut className="w-5 h-5" />
-                            <span>Logout</span>
-                        </button>
-                    </div>
-                </div>
-            </nav>
-
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="space-y-8">
                 {/* Header */}
                 <div className="mb-8">
                     <h2 className="text-3xl font-bold text-gray-900">Admin Dashboard</h2>
@@ -126,12 +104,12 @@ function AdminDashboard() {
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm text-gray-600">Total Users</p>
-                                <p className="text-3xl font-bold text-gray-900">{stats.users.total}</p>
+                                <p className="text-3xl font-bold text-gray-900">{stats?.users?.total || 0}</p>
                             </div>
                             <Users className="w-12 h-12 text-blue-600" />
                         </div>
                         <div className="mt-4 text-sm text-gray-500">
-                            <span className="text-green-600">↑ {stats.users.customers}</span> Customers
+                            <span className="text-green-600">↑ {stats?.users?.customers || 0}</span> Customers
                         </div>
                     </button>
 
@@ -163,7 +141,7 @@ function AdminDashboard() {
                             <ShoppingCart className="w-12 h-12 text-purple-600" />
                         </div>
                         <div className="mt-4 text-sm text-gray-500">
-                            <span className="text-blue-600">📦 {stats.orders.pending}</span> Pending
+                            <span className="text-blue-600">📦 {stats?.orders?.pending || 0}</span> Pending
                         </div>
                     </button>
 
@@ -175,7 +153,7 @@ function AdminDashboard() {
                             <div>
                                 <p className="text-sm text-gray-600">Revenue</p>
                                 <p className="text-3xl font-bold text-gray-900">
-                                    Rs. {stats.revenue.total.toLocaleString()}
+                                    Rs. {(stats?.revenue?.total || 0).toLocaleString()}
                                 </p>
                             </div>
                             <TrendingUp className="w-12 h-12 text-orange-600" />
@@ -206,7 +184,7 @@ function AdminDashboard() {
                         </div>
                     ) : (
                         <div className="space-y-4">
-                            {pendingPharmacists.map((pharmacist) => (
+                            {pendingPharmacists?.map((pharmacist) => (
                                 <div
                                     key={pharmacist._id}
                                     className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
@@ -214,10 +192,10 @@ function AdminDashboard() {
                                     <div className="flex justify-between items-start">
                                         <div className="flex-1">
                                             <h4 className="font-semibold text-gray-900 text-lg">
-                                                {pharmacist.user?.firstName} {pharmacist.user?.lastName}
+                                                {pharmacist?.user?.firstName} {pharmacist?.user?.lastName}
                                             </h4>
-                                            <p className="text-sm text-gray-600 mt-1">{pharmacist.user?.email}</p>
-                                            <p className="text-sm text-gray-600">{pharmacist.user?.phone}</p>
+                                            <p className="text-sm text-gray-600 mt-1">{pharmacist?.user?.email}</p>
+                                            <p className="text-sm text-gray-600">{pharmacist?.user?.phone}</p>
 
                                             <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
                                                 <div className="bg-blue-50 p-2 rounded">
@@ -301,7 +279,6 @@ function AdminDashboard() {
                         <div className="mt-4 text-purple-600 font-medium text-sm">Click to generate →</div>
                     </button>
                 </div>
-            </div>
         </div>
     );
 }
