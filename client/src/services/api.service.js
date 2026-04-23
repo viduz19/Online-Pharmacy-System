@@ -1,4 +1,3 @@
-export { default as api } from '../config/api';
 import api from '../config/api';
 
 export const authService = {
@@ -50,6 +49,24 @@ export const productService = {
     // Get single product
     getProduct: async (id) => {
         const response = await api.get(`/products/${id}`);
+        return response.data;
+    },
+
+    // Create product
+    createProduct: async (productData) => {
+        const response = await api.post('/products', productData);
+        return response.data;
+    },
+
+    // Update product
+    updateProduct: async (id, productData) => {
+        const response = await api.put(`/products/${id}`, productData);
+        return response.data;
+    },
+
+    // Delete product
+    deleteProduct: async (id) => {
+        const response = await api.delete(`/products/${id}`);
         return response.data;
     },
 };
@@ -141,7 +158,39 @@ export const adminService = {
         return response.data;
     },
 
-    // Get sales report
+    // User management
+    getAllUsers: async (params = {}) => {
+        const response = await api.get('/admin/users', { params });
+        return response.data;
+    },
+
+    updateUserStatus: async (id, status) => {
+        const response = await api.patch(`/admin/users/${id}/status`, { status });
+        return response.data;
+    },
+
+    // Category management
+    getCategories: async () => {
+        const response = await api.get('/admin/categories');
+        return response.data;
+    },
+
+    createCategory: async (data) => {
+        const response = await api.post('/admin/categories', data);
+        return response.data;
+    },
+
+    updateCategory: async (id, data) => {
+        const response = await api.put(`/admin/categories/${id}`, data);
+        return response.data;
+    },
+
+    deleteCategory: async (id) => {
+        const response = await api.delete(`/admin/categories/${id}`);
+        return response.data;
+    },
+
+    // Reports
     getSalesReport: async (params = {}) => {
         const response = await api.get('/admin/reports/sales', { params });
         return response.data;
@@ -156,6 +205,41 @@ export const adminService = {
     // Get all customers
     getAllCustomers: async (params = {}) => {
         const response = await api.get('/admin/customers', { params });
+        return response.data;
+    },
+};
+
+export const pharmacistService = {
+    // Get pharmacist dashboard stats
+    getStats: async () => {
+        const response = await api.get('/pharmacist/stats');
+        return response.data;
+    },
+
+    // Prescription Management
+    getPendingPrescriptions: async (params = {}) => {
+        const response = await api.get('/pharmacist/prescriptions/pending', { params });
+        return response.data;
+    },
+
+    getAllPrescriptions: async (params = {}) => {
+        const response = await api.get('/pharmacist/prescriptions/all', { params });
+        return response.data;
+    },
+
+    reviewPrescription: async (id, data) => {
+        const response = await api.patch(`/pharmacist/prescriptions/${id}/review`, data);
+        return response.data;
+    },
+
+    // Order Management
+    getOrders: async (params = {}) => {
+        const response = await api.get('/pharmacist/orders', { params });
+        return response.data;
+    },
+
+    updateOrderStatus: async (id, data) => {
+        const response = await api.patch(`/pharmacist/orders/${id}/status`, data);
         return response.data;
     },
 };

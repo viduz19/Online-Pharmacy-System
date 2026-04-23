@@ -10,7 +10,12 @@ import PharmacistDashboard from '../pages/PharmacistDashboard';
 import AdminDashboard from '../pages/AdminDashboard';
 import AdminProducts from '../pages/AdminProducts';
 import AdminUsers from '../pages/AdminUsers';
+import AdminOrders from '../pages/AdminOrders';
 import AdminReports from '../pages/AdminReports';
+import AdminPrescriptions from '../pages/AdminPrescriptions';
+import PharmacistPrescriptions from '../pages/PharmacistPrescriptions';
+import PharmacistOrders from '../pages/PharmacistOrders';
+import PharmacistProducts from '../pages/PharmacistProducts';
 import Cart from '../pages/Cart';
 import Checkout from '../pages/Checkout';
 import ProtectedRoute from '../components/ProtectedRoute';
@@ -47,37 +52,78 @@ function AppRoutes() {
                     <DashboardLayout><UploadPrescription /></DashboardLayout>
                 </ProtectedRoute>
             } />
-
             <Route path="/customer/help" element={
                 <ProtectedRoute allowedRoles={['CUSTOMER']}>
                     <DashboardLayout><Help /></DashboardLayout>
                 </ProtectedRoute>
             } />
 
+            {/* Pharmacist Routes */}
             <Route path="/pharmacist/dashboard" element={
                 <ProtectedRoute allowedRoles={['PHARMACIST']}>
-                    <DashboardLayout><PharmacistDashboard /></DashboardLayout>
+                    <PharmacistDashboard />
+                </ProtectedRoute>
+            } />
+            <Route path="/pharmacist/prescriptions/pending" element={
+                <ProtectedRoute allowedRoles={['PHARMACIST']}>
+                    <PharmacistPrescriptions />
+                </ProtectedRoute>
+            } />
+            <Route path="/pharmacist/prescriptions/approved" element={
+                <ProtectedRoute allowedRoles={['PHARMACIST']}>
+                    <PharmacistPrescriptions />
+                </ProtectedRoute>
+            } />
+            <Route path="/pharmacist/prescriptions/rejected" element={
+                <ProtectedRoute allowedRoles={['PHARMACIST']}>
+                    <PharmacistPrescriptions />
+                </ProtectedRoute>
+            } />
+            <Route path="/pharmacist/orders" element={
+                <ProtectedRoute allowedRoles={['PHARMACIST']}>
+                    <PharmacistOrders />
+                </ProtectedRoute>
+            } />
+            <Route path="/pharmacist/products" element={
+                <ProtectedRoute allowedRoles={['PHARMACIST']}>
+                    <PharmacistProducts />
                 </ProtectedRoute>
             } />
 
+            {/* Admin Routes */}
             <Route path="/admin/dashboard" element={
                 <ProtectedRoute allowedRoles={['ADMIN']}>
-                    <DashboardLayout><AdminDashboard /></DashboardLayout>
+                    <AdminDashboard />
                 </ProtectedRoute>
             } />
             <Route path="/admin/products" element={
                 <ProtectedRoute allowedRoles={['ADMIN', 'PHARMACIST']}>
-                    <DashboardLayout><AdminProducts /></DashboardLayout>
+                    <AdminProducts />
                 </ProtectedRoute>
             } />
             <Route path="/admin/users" element={
                 <ProtectedRoute allowedRoles={['ADMIN']}>
-                    <DashboardLayout><AdminUsers /></DashboardLayout>
+                    <AdminUsers />
+                </ProtectedRoute>
+            } />
+            <Route path="/admin/orders" element={
+                <ProtectedRoute allowedRoles={['ADMIN']}>
+                    <AdminOrders />
+                </ProtectedRoute>
+            } />
+            <Route path="/admin/prescriptions" element={
+                <ProtectedRoute allowedRoles={['ADMIN']}>
+                    <AdminPrescriptions />
                 </ProtectedRoute>
             } />
             <Route path="/admin/reports" element={
                 <ProtectedRoute allowedRoles={['ADMIN']}>
-                    <DashboardLayout><AdminReports /></DashboardLayout>
+                    <AdminReports />
+                </ProtectedRoute>
+            } />
+            <Route path="/admin/revenue" element={
+                <ProtectedRoute allowedRoles={['ADMIN']}>
+                    <AdminReports />
                 </ProtectedRoute>
             } />
 

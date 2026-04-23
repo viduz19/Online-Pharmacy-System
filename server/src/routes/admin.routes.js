@@ -32,7 +32,7 @@ router.get('/users', getAllUsers);
 router.get('/customers', getAllCustomers);
 router.patch('/users/:id/status', updateUserStatus);
 
-// Dashboard
+// Dashboard & Reports
 router.get('/dashboard/stats', getDashboardStats);
 router.get('/reports/sales', getSalesReport);
 

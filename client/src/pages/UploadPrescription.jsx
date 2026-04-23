@@ -24,7 +24,7 @@ function UploadPrescription() {
         const selectedFiles = Array.from(e.target.files);
 
         // Validate file types
-        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
+        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf', 'image/pjpeg'];
         const invalidFiles = selectedFiles.filter(file => !validTypes.includes(file.type));
 
         if (invalidFiles.length > 0) {
@@ -146,7 +146,7 @@ function UploadPrescription() {
                                     type="file"
                                     id="prescription-upload"
                                     multiple
-                                    accept="image/jpeg,image/jpg,image/png,application/pdf"
+                                    accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf"
                                     onChange={handleFileChange}
                                     className="hidden"
                                 />

@@ -148,7 +148,7 @@ const orderSchema = new mongoose.Schema(
 );
 
 // Generate order number before saving
-orderSchema.pre('save', async function (next) {
+orderSchema.pre('validate', async function (next) {
     if (this.isNew) {
         const count = await mongoose.model('Order').countDocuments();
         this.orderNumber = `VPH${String(count + 1).padStart(6, '0')}`;
