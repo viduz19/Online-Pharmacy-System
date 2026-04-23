@@ -10,6 +10,7 @@ import {
     updateCategory,
     deleteCategory,
     getCategories,
+    getSalesReport,
 } from '../controllers/admin.controller.js';
 import { protect, authorize } from '../middleware/auth.middleware.js';
 
@@ -27,8 +28,9 @@ router.patch('/pharmacists/:id/approval', updatePharmacistApproval);
 router.get('/users', getAllUsers);
 router.patch('/users/:id/status', updateUserStatus);
 
-// Dashboard
+// Dashboard & Reports
 router.get('/dashboard/stats', getDashboardStats);
+router.get('/reports/sales', getSalesReport);
 
 // Audit logs
 router.get('/audit-logs', getAuditLogsController);

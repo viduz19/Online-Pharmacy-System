@@ -178,6 +178,13 @@ export const updateUserStatus = async (req, res) => {
 // @access  Private/Admin
 export const getDashboardStats = async (req, res) => {
     try {
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+
+        const startOfMonth = new Date();
+        startOfMonth.setDate(1);
+        startOfMonth.setHours(0, 0, 0, 0);
+
         const [
             totalUsers,
             totalCustomers,
@@ -187,8 +194,11 @@ export const getDashboardStats = async (req, res) => {
             lowStockProducts,
             totalOrders,
             pendingOrders,
-            todayOrders,
-            totalRevenue,
+            todayOrdersCount,
+            revenueData,
+            todayRevenueData,
+            monthlyRevenueData,
+            ordersByStatus,
         ] = await Promise.all([
             User.countDocuments(),
             User.countDocuments({ role: 'CUSTOMER' }),
@@ -200,16 +210,43 @@ export const getDashboardStats = async (req, res) => {
                 $expr: { $lte: ['$stock', '$lowStockThreshold'] },
             }),
             Order.countDocuments(),
-            Order.countDocuments({ status: 'PENDING_REVIEW' }),
-            Order.countDocuments({
-                createdAt: {
-                    $gte: new Date(new Date().setHours(0, 0, 0, 0)),
-                },
-            }),
+            Order.countDocuments({ status: { $in: ['PENDING_REVIEW', 'APPROVED', 'AWAITING_PAYMENT'] } }),
+            Order.countDocuments({ createdAt: { $gte: startOfDay } }),
+            
+            // Total Revenue
             Order.aggregate([
-                { $match: { paymentStatus: 'PAID' } },
+                { $match: { paymentStatus: 'PAID', status: { $ne: 'CANCELLED' } } },
                 { $group: { _id: null, total: { $sum: '$total' } } },
             ]),
+            
+            // Today Revenue
+            Order.aggregate([
+                { 
+                    $match: { 
+                        paymentStatus: 'PAID', 
+                        status: { $ne: 'CANCELLED' },
+                        createdAt: { $gte: startOfDay }
+                    } 
+                },
+                { $group: { _id: null, total: { $sum: '$total' } } },
+            ]),
+            
+            // Monthly Revenue
+            Order.aggregate([
+                { 
+                    $match: { 
+                        paymentStatus: 'PAID', 
+                        status: { $ne: 'CANCELLED' },
+                        createdAt: { $gte: startOfMonth }
+                    } 
+                },
+                { $group: { _id: null, total: { $sum: '$total' } } },
+            ]),
+
+            // Orders by status
+            Order.aggregate([
+                { $group: { _id: '$status', count: { $sum: 1 } } }
+            ])
         ]);
 
         const stats = {
@@ -226,10 +263,13 @@ export const getDashboardStats = async (req, res) => {
             orders: {
                 total: totalOrders,
                 pending: pendingOrders,
-                today: todayOrders,
+                today: todayOrdersCount,
+                byStatus: ordersByStatus.reduce((acc, curr) => ({ ...acc, [curr._id]: curr.count }), {}),
             },
             revenue: {
-                total: totalRevenue[0]?.total || 0,
+                total: revenueData[0]?.total || 0,
+                today: todayRevenueData[0]?.total || 0,
+                monthly: monthlyRevenueData[0]?.total || 0,
             },
         };
 
@@ -237,6 +277,49 @@ export const getDashboardStats = async (req, res) => {
     } catch (error) {
         console.error('Get dashboard stats error:', error);
         errorResponse(res, error.message || 'Error retrieving dashboard statistics', 500);
+    }
+};
+
+// @desc    Get pharmacist dashboard statistics
+// @route   GET /api/pharmacist/stats
+// @access  Private/Pharmacist
+export const getPharmacistStats = async (req, res) => {
+    try {
+        const [
+            pendingPrescriptions,
+            approvedPrescriptions,
+            rejectedPrescriptions,
+            activeOrders,
+            completedOrders,
+            lowStockProducts
+        ] = await Promise.all([
+            Prescription.countDocuments({ status: 'PENDING' }),
+            Prescription.countDocuments({ status: 'APPROVED' }),
+            Prescription.countDocuments({ status: 'REJECTED' }),
+            Order.countDocuments({ status: { $in: ['PAID', 'PREPARING', 'READY_FOR_DELIVERY'] } }),
+            Order.countDocuments({ status: 'DELIVERED' }),
+            Product.countDocuments({ isActive: true, $expr: { $lte: ['$stock', '$lowStockThreshold'] } })
+        ]);
+
+        const stats = {
+            prescriptions: {
+                pending: pendingPrescriptions,
+                approved: approvedPrescriptions,
+                rejected: rejectedPrescriptions
+            },
+            orders: {
+                active: activeOrders,
+                completed: completedOrders
+            },
+            inventory: {
+                lowStock: lowStockProducts
+            }
+        };
+
+        successResponse(res, 'Pharmacist statistics retrieved successfully', stats);
+    } catch (error) {
+        console.error('Get pharmacist stats error:', error);
+        errorResponse(res, error.message || 'Error retrieving statistics', 500);
     }
 };
 
@@ -332,9 +415,91 @@ export const deleteCategory = async (req, res) => {
     }
 };
 
-// @desc    Get all categories
-// @route   GET /api/admin/categories
-// @access  Public
+// @desc    Get sales reports
+// @route   GET /api/admin/reports/sales
+// @access  Private/Admin
+export const getSalesReport = async (req, res) => {
+    try {
+        const { startDate, endDate, period = 'daily' } = req.query;
+        
+        let start = new Date(startDate || new Date().setDate(new Date().getDate() - 30));
+        let end = new Date(endDate || new Date());
+        start.setHours(0, 0, 0, 0);
+        end.setHours(23, 59, 59, 999);
+
+        const matchStage = {
+            paymentStatus: 'PAID',
+            status: { $ne: 'CANCELLED' },
+            createdAt: { $gte: start, $lte: end }
+        };
+
+        let groupFormat;
+        switch (period) {
+            case 'monthly':
+                groupFormat = { month: { $month: '$createdAt' }, year: { $year: '$createdAt' } };
+                break;
+            case 'weekly':
+                groupFormat = { week: { $week: '$createdAt' }, year: { $year: '$createdAt' } };
+                break;
+            case 'daily':
+            default:
+                groupFormat = { day: { $dayOfMonth: '$createdAt' }, month: { $month: '$createdAt' }, year: { $year: '$createdAt' } };
+                break;
+        }
+
+        const salesReport = await Order.aggregate([
+            { $match: matchStage },
+            {
+                $group: {
+                    _id: groupFormat,
+                    revenue: { $sum: '$total' },
+                    orders: { $sum: 1 },
+                    items: { $sum: { $size: '$items' } }
+                }
+            },
+            { $sort: { '_id.year': 1, '_id.month': 1, '_id.day': 1, '_id.week': 1 } }
+        ]);
+
+        const topProducts = await Order.aggregate([
+            { $match: matchStage },
+            { $unwind: '$items' },
+            {
+                $group: {
+                    _id: '$items.product',
+                    name: { $first: '$items.productName' }, // Note: may need to join with Product if productName isn't in Order
+                    quantity: { $sum: '$items.quantity' },
+                    revenue: { $sum: '$items.subtotal' }
+                }
+            },
+            { $sort: { quantity: -1 } },
+            { $limit: 10 },
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'productDetails'
+                }
+            },
+            { $unwind: '$productDetails' }
+        ]);
+
+        successResponse(res, 'Sales report retrieved successfully', {
+            sales: salesReport,
+            topProducts: topProducts.map(p => ({
+                id: p._id,
+                name: p.productDetails.name,
+                brand: p.productDetails.brand,
+                quantity: p.quantity,
+                revenue: p.revenue
+            }))
+        });
+    } catch (error) {
+        console.error('Get sales report error:', error);
+        errorResponse(res, error.message || 'Error generating sales report', 500);
+    }
+};
+
 export const getCategories = async (req, res) => {
     try {
         const categories = await Category.find({ isActive: true }).sort('name');
