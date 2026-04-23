@@ -3,6 +3,9 @@ import dotenv from 'dotenv';
 import User from '../../models/User.model.js';
 import Category from '../../models/Category.model.js';
 import Product from '../../models/Product.model.js';
+import PharmacistProfile from '../../models/PharmacistProfile.model.js';
+import Order from '../../models/Order.model.js';
+import Prescription from '../../models/Prescription.model.js';
 import config from '../../config/env.js';
 import connectDB from '../../config/db.js';
 
@@ -355,6 +358,79 @@ const adminUser = {
     },
 };
 
+// Sample Users from TEST_DATA.md
+const sampleUsers = [
+    {
+        firstName: 'Kasun',
+        lastName: 'Perera',
+        email: 'kasun.perera@gmail.com',
+        phone: '+94771234567',
+        password: 'Customer@123',
+        role: 'CUSTOMER',
+        status: 'ACTIVE',
+        address: {
+            street: '123 Galle Road',
+            city: 'Colombo',
+            province: 'Western',
+            postalCode: '00300',
+        },
+    },
+    {
+        firstName: 'Nimal',
+        lastName: 'Silva',
+        email: 'nimal.silva@pharmacy.lk',
+        phone: '+94712345678',
+        password: 'Pharmacist@123',
+        role: 'PHARMACIST',
+        status: 'ACTIVE', // Will be set to ACTIVE after profile approval in seeder logic
+        address: {
+            street: '456 Kandy Road',
+            city: 'Kandy',
+            province: 'Central',
+            postalCode: '20000',
+        },
+    },
+    {
+        firstName: 'Saman',
+        lastName: 'Fernando',
+        email: 'saman.fernando@pharmacy.lk',
+        phone: '+94773456789',
+        password: 'Pharmacist@123',
+        role: 'PHARMACIST',
+        status: 'PENDING',
+        address: {
+            street: '789 Negombo Road',
+            city: 'Negombo',
+            province: 'Western',
+            postalCode: '11500',
+        },
+    },
+];
+
+// Sample Pharmacist Profiles
+const samplePharmacistProfiles = [
+    {
+        email: 'nimal.silva@pharmacy.lk', // Used to find the user in seeder
+        licenseNumber: 'SLMC12345',
+        nic: '199012345678',
+        qualifications: 'B.Pharm, M.Pharm',
+        yearsOfExperience: 5,
+        pharmacyBranch: 'Kandy Main Branch',
+        specialization: 'Clinical Pharmacy',
+        approvalStatus: 'APPROVED',
+    },
+    {
+        email: 'saman.fernando@pharmacy.lk',
+        licenseNumber: 'SLMC67890',
+        nic: '198567891234',
+        qualifications: 'B.Pharm',
+        yearsOfExperience: 8,
+        pharmacyBranch: 'Negombo Branch',
+        specialization: 'Community Pharmacy',
+        approvalStatus: 'PENDING',
+    },
+];
+
 const seedDatabase = async () => {
     try {
         await connectDB();
@@ -363,13 +439,20 @@ const seedDatabase = async () => {
         await User.deleteMany({});
         await Category.deleteMany({});
         await Product.deleteMany({});
+        await PharmacistProfile.deleteMany({});
+        await Order.deleteMany({});
+        await Prescription.deleteMany({});
 
         console.log('👤 Creating admin user...');
         await User.create(adminUser);
         console.log('✅ Admin user created');
 
         console.log('📁 Creating categories...');
-        const createdCategories = await Category.insertMany(categories);
+        const createdCategories = [];
+        for (const cat of categories) {
+            const createdCat = await Category.create(cat);
+            createdCategories.push(createdCat);
+        }
         console.log(`✅ ${createdCategories.length} categories created`);
 
         console.log('💊 Creating products...');
@@ -382,8 +465,100 @@ const seedDatabase = async () => {
             };
         });
 
-        const createdProducts = await Product.insertMany(productsWithCategories);
+        const createdProducts = await Product.create(productsWithCategories);
         console.log(`✅ ${createdProducts.length} products created`);
+
+        console.log('👥 Creating sample users...');
+        const createdUsers = await User.create(sampleUsers);
+        console.log(`✅ ${createdUsers.length} sample users created`);
+
+        console.log('🩺 Creating pharmacist profiles...');
+        const adminAccount = await User.findOne({ role: 'ADMIN' });
+        for (const profileData of samplePharmacistProfiles) {
+            const user = createdUsers.find(u => u.email === profileData.email);
+            const { email, ...rest } = profileData;
+            await PharmacistProfile.create({
+                ...rest,
+                user: user._id,
+                approvedBy: profileData.approvalStatus === 'APPROVED' ? adminAccount._id : null,
+                approvedAt: profileData.approvalStatus === 'APPROVED' ? new Date() : null
+            });
+        }
+        console.log('✅ Pharmacist profiles created');
+
+        console.log('📦 Creating sample orders...');
+        const customer = createdUsers.find(u => u.role === 'CUSTOMER');
+        const approvedPharmacist = createdUsers.find(u => u.email === 'nimal.silva@pharmacy.lk');
+        const panadol = createdProducts.find(p => p.name === 'Panadol');
+        const samahan = createdProducts.find(p => p.name === 'Samahan');
+        const amoxicillin = createdProducts.find(p => p.name === 'Amoxicillin');
+
+        // 1. OTC Order (Completed)
+        const otcOrder = await Order.create({
+            customer: customer._id,
+            items: [
+                { product: panadol._id, quantity: 2, price: panadol.price, subtotal: panadol.price * 2 },
+                { product: samahan._id, quantity: 5, price: samahan.price, subtotal: samahan.price * 5 }
+            ],
+            subtotal: (panadol.price * 2) + (samahan.price * 5),
+            deliveryFee: 150,
+            total: (panadol.price * 2) + (samahan.price * 5) + 150,
+            status: 'DELIVERED',
+            paymentMethod: 'COD',
+            paymentStatus: 'PAID',
+            deliveryAddress: {
+                street: customer.address.street,
+                city: customer.address.city,
+                province: customer.address.province,
+                postalCode: customer.address.postalCode,
+                contactPhone: customer.phone
+            }
+        });
+
+        // 2. Prescription Order (Pending Review)
+        const prescriptionOrder = await Order.create({
+            customer: customer._id,
+            items: [
+                { product: amoxicillin._id, quantity: 10, price: amoxicillin.price, subtotal: amoxicillin.price * 10 }
+            ],
+            subtotal: amoxicillin.price * 10,
+            deliveryFee: 200,
+            total: (amoxicillin.price * 10) + 200,
+            status: 'PENDING_REVIEW',
+            paymentMethod: 'ONLINE',
+            paymentStatus: 'PENDING',
+            deliveryAddress: {
+                street: customer.address.street,
+                city: customer.address.city,
+                province: customer.address.province,
+                postalCode: customer.address.postalCode,
+                contactPhone: customer.phone
+            }
+        });
+
+        // 3. Create associated Prescription
+        await Prescription.create({
+            customer: customer._id,
+            order: prescriptionOrder._id,
+            files: [{
+                filename: 'prescription_sample.jpg',
+                originalName: 'prescription.jpg',
+                path: 'uploads/prescriptions/sample.jpg',
+                mimetype: 'image/jpeg',
+                size: 1024 * 500
+            }],
+            requestedMedicines: [
+                { productName: 'Amoxicillin 500mg', quantity: 10, notes: 'Full course' }
+            ],
+            status: 'PENDING'
+        });
+
+        // Update the order with prescription ID
+        const newlyCreatedPrescription = await Prescription.findOne({ order: prescriptionOrder._id });
+        prescriptionOrder.prescription = newlyCreatedPrescription._id;
+        await prescriptionOrder.save();
+
+        console.log('✅ Sample orders and prescriptions created');
 
         console.log(`
 ╔═══════════════════════════════════════════════════════════╗

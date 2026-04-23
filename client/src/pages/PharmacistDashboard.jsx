@@ -67,7 +67,7 @@ function PharmacistDashboard() {
             return;
         }
 
-        if (reviewData.status === 'RE_UPLOAD_REQUESTED' && !reviewData.reviewNotes) {
+        if (reviewData.status === 'REUPLOAD_REQUIRED' && !reviewData.reviewNotes) {
             toast.error('Please explain why a re-upload is needed in notes');
             return;
         }
@@ -247,20 +247,29 @@ function PharmacistDashboard() {
 
                                         <div className="ml-4 flex flex-col space-y-2">
                                             {(prescription.files || []).map((file, fIdx) => (
-                                                <a
-                                                    key={fIdx}
-                                                    href={`http://localhost:5000/uploads/prescriptions/${file.filename}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-200 transition-colors flex items-center space-x-2 text-xs"
-                                                >
-                                                    <Eye className="w-3.5 h-3.5" />
-                                                    <span>View {(file.originalName || 'File').length > 15 ? (file.originalName || 'File').substring(0, 12) + '...' : (file.originalName || 'File')}</span>
-                                                </a>
+                                                <div key={fIdx} className="flex flex-col space-y-2">
+                                                    <a
+                                                        href={`http://localhost:5000/uploads/prescriptions/${file.filename}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-200 transition-colors flex items-center space-x-2 text-xs font-medium"
+                                                    >
+                                                        <Eye className="w-3.5 h-3.5" />
+                                                        <span>View {(file.originalName || 'File').length > 12 ? (file.originalName || 'File').substring(0, 10) + '...' : (file.originalName || 'File')}</span>
+                                                    </a>
+                                                    <a
+                                                        href={`http://localhost:5000/uploads/prescriptions/${file.filename}`}
+                                                        download={file.originalName}
+                                                        className="bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition-colors flex items-center space-x-2 text-xs font-medium"
+                                                    >
+                                                        <FileText className="w-3.5 h-3.5" />
+                                                        <span>Download</span>
+                                                    </a>
+                                                </div>
                                             ))}
                                             <button
                                                 onClick={() => handleReviewPrescription(prescription)}
-                                                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2 shadow-sm"
+                                                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2 shadow-sm font-bold mt-2"
                                             >
                                                 <DollarSign className="w-4 h-4" />
                                                 <span>Review & Price</span>
@@ -391,8 +400,8 @@ function PharmacistDashboard() {
                                         Approve
                                     </button>
                                     <button
-                                        onClick={() => setReviewData({ ...reviewData, status: 'RE_UPLOAD_REQUESTED' })}
-                                        className={`py-3 rounded-lg font-medium transition-all flex items-center justify-center ${reviewData.status === 'RE_UPLOAD_REQUESTED'
+                                        onClick={() => setReviewData({ ...reviewData, status: 'REUPLOAD_REQUIRED' })}
+                                        className={`py-3 rounded-lg font-medium transition-all flex items-center justify-center ${reviewData.status === 'REUPLOAD_REQUIRED'
                                             ? 'bg-blue-600 text-white shadow-lg'
                                             : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                                             }`}

@@ -7,7 +7,7 @@ import { ShoppingCart, Upload, Package, User, LogOut, FileText, CreditCard, Tras
 
 function CustomerDashboard() {
     const navigate = useNavigate();
-    const { cartItems, getCartTotal, removeFromCart, updateQuantity, clearCart } = useCart();
+    const { cartItems, getCartTotal, getCartCount, removeFromCart, updateQuantity, clearCart } = useCart();
     const user = authService.getCurrentUser() || { firstName: 'Customer' };
     const [orders, setOrders] = useState([]);
     const [prescriptions, setPrescriptions] = useState([]);
