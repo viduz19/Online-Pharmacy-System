@@ -5,44 +5,29 @@
 Before you begin, ensure you have the following installed:
 
 - **Node.js** (v16 or higher) - [Download](https://nodejs.org/)
-- **MongoDB Atlas Account** - [Sign up](https://www.mongodb.com/cloud/atlas)
+- **Node.js** (v16 or higher) - [Download](https://nodejs.org/)
+- **MongoDB Community Server** - [Download](https://www.mongodb.com/try/download/community)
+- **MongoDB Compass** (GUI for MongoDB) - [Download](https://www.mongodb.com/try/download/compass)
 - **Git** - [Download](https://git-scm.com/)
 - **Code Editor** (VS Code recommended) - [Download](https://code.visualstudio.com/)
 
 ## 🚀 Quick Start Guide
 
-### Step 1: MongoDB Atlas Setup
+### Step 1: Local MongoDB Setup
 
-1. **Create a MongoDB Atlas Account**
-   - Go to [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
-   - Sign up for a free account
+1. **Install MongoDB Community Server**
+   - Download and install from the [official website](https://www.mongodb.com/try/download/community).
+   - During installation, ensure "Install MongoDB as a Service" is checked.
 
-2. **Create a New Cluster**
-   - Click "Build a Database"
-   - Choose "FREE" tier (M0 Sandbox)
-   - Select a cloud provider and region (choose closest to Sri Lanka)
-   - Click "Create Cluster"
+2. **Install MongoDB Compass (Optional but Recommended)**
+   - Download and install [MongoDB Compass](https://www.mongodb.com/try/download/compass).
+   - This provides a visual interface to manage your database.
 
-3. **Configure Database Access**
-   - Go to "Database Access" in left sidebar
-   - Click "Add New Database User"
-   - Choose "Password" authentication
-   - Create username and password (save these!)
-   - Set privileges to "Atlas admin"
-   - Click "Add User"
-
-4. **Configure Network Access**
-   - Go to "Network Access" in left sidebar
-   - Click "Add IP Address"
-   - Click "Allow Access from Anywhere" (for development)
-   - Click "Confirm"
-
-5. **Get Connection String**
-   - Go to "Database" in left sidebar
-   - Click "Connect" on your cluster
-   - Choose "Connect your application"
-   - Copy the connection string
-   - It looks like: `mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/?retryWrites=true&w=majority`
+3. **Verify Installation**
+   - Open MongoDB Compass.
+   - Use the default connection string: `mongodb://localhost:27017`
+   - Click "Connect".
+   - You don't need to manually create the database; the application will create it for you.
 
 ### Step 2: Backend Setup
 
@@ -61,7 +46,7 @@ Create a file named `.env` in the `server` directory with the following content:
 
 ```env
 PORT=5000
-MONGODB_URI=mongodb+srv://your_username:your_password@cluster0.xxxxx.mongodb.net/viduz-pharmacy?retryWrites=true&w=majority
+MONGODB_URI=mongodb://localhost:27017/Online-Pharmacy-System-1
 JWT_SECRET=your_super_secret_jwt_key_min_32_characters_long
 JWT_EXPIRE=7d
 NODE_ENV=development
@@ -75,10 +60,7 @@ ADMIN_EMAIL=admin@viduzpharmacy.lk
 ADMIN_PASSWORD=Admin@123
 ```
 
-**Important:** Replace the following in your `.env` file:
-- `your_username` - Your MongoDB Atlas username
-- `your_password` - Your MongoDB Atlas password
-- `cluster0.xxxxx` - Your actual cluster address from MongoDB Atlas
+- `mongodb://localhost:27017/Online-Pharmacy-System-1` - Your local connection string
 - `your_super_secret_jwt_key_min_32_characters_long` - Generate a random 32+ character string
 
 4. **Seed the database**
@@ -98,8 +80,8 @@ npm run dev
 
 You should see:
 ```
-✅ MongoDB Connected: cluster0.xxxxx.mongodb.net
-📊 Database: viduz-pharmacy
+✅ MongoDB Connected: localhost
+📊 Database: Online-Pharmacy-System-1
 🚀 Server running on port 5000
 ```
 
@@ -203,13 +185,9 @@ viduz-pharmacy/
 
 ## 🛠️ Common Issues & Solutions
 
-### Issue: MongoDB Connection Error
-**Error:** `Could not connect to any servers in your MongoDB Atlas cluster`
-
-**Solutions:**
-1. Check your IP is whitelisted in MongoDB Atlas Network Access
-2. Verify your connection string in `.env` is correct
-3. Ensure username and password don't contain special characters (or URL encode them)
+1. Ensure MongoDB Service is running on your machine.
+2. Verify your connection string in `.env` is `mongodb://localhost:27017/Online-Pharmacy-System-1`.
+3. If using MongoDB Atlas in the future, check if your IP is whitelisted.
 
 ### Issue: Port Already in Use
 **Error:** `Port 5000 is already in use`
