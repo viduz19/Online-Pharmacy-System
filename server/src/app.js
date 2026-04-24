@@ -9,6 +9,7 @@ import productRoutes from './routes/product.routes.js';
 import orderRoutes from './routes/order.routes.js';
 import prescriptionRoutes from './routes/prescription.routes.js';
 import adminRoutes from './routes/admin.routes.js';
+import categoryRoutes from './routes/category.routes.js';
 import pharmacistRoutes from './routes/pharmacist.routes.js';
 
 // Import middleware
@@ -33,6 +34,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/prescriptions', prescriptionRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/categories', categoryRoutes);
 app.use('/api/pharmacist', pharmacistRoutes);
 
 // Health check

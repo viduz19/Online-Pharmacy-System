@@ -382,7 +382,7 @@ const sampleUsers = [
         phone: '+94712345678',
         password: 'Pharmacist@123',
         role: 'PHARMACIST',
-        status: 'ACTIVE', // Will be set to ACTIVE after profile approval in seeder logic
+        status: 'ACTIVE',
         address: {
             street: '456 Kandy Road',
             city: 'Kandy',
@@ -410,7 +410,7 @@ const sampleUsers = [
 // Sample Pharmacist Profiles
 const samplePharmacistProfiles = [
     {
-        email: 'nimal.silva@pharmacy.lk', // Used to find the user in seeder
+        email: 'nimal.silva@pharmacy.lk',
         licenseNumber: 'SLMC12345',
         nic: '199012345678',
         qualifications: 'B.Pharm, M.Pharm',
@@ -445,7 +445,6 @@ const seedDatabase = async () => {
 
         console.log('👤 Creating admin user...');
         await User.create(adminUser);
-        console.log('✅ Admin user created');
 
         console.log('📁 Creating categories...');
         const createdCategories = [];
@@ -453,7 +452,6 @@ const seedDatabase = async () => {
             const createdCat = await Category.create(cat);
             createdCategories.push(createdCat);
         }
-        console.log(`✅ ${createdCategories.length} categories created`);
 
         console.log('💊 Creating products...');
         const productsWithCategories = products.map((product) => {
@@ -466,11 +464,9 @@ const seedDatabase = async () => {
         });
 
         const createdProducts = await Product.create(productsWithCategories);
-        console.log(`✅ ${createdProducts.length} products created`);
 
         console.log('👥 Creating sample users...');
         const createdUsers = await User.create(sampleUsers);
-        console.log(`✅ ${createdUsers.length} sample users created`);
 
         console.log('🩺 Creating pharmacist profiles...');
         const adminAccount = await User.findOne({ role: 'ADMIN' });
@@ -484,16 +480,14 @@ const seedDatabase = async () => {
                 approvedAt: profileData.approvalStatus === 'APPROVED' ? new Date() : null
             });
         }
-        console.log('✅ Pharmacist profiles created');
 
         console.log('📦 Creating sample orders...');
         const customer = createdUsers.find(u => u.role === 'CUSTOMER');
-        const approvedPharmacist = createdUsers.find(u => u.email === 'nimal.silva@pharmacy.lk');
         const panadol = createdProducts.find(p => p.name === 'Panadol');
         const samahan = createdProducts.find(p => p.name === 'Samahan');
         const amoxicillin = createdProducts.find(p => p.name === 'Amoxicillin');
 
-        // 1. OTC Order (Completed)
+        // Sample Orders
         const otcOrder = await Order.create({
             customer: customer._id,
             items: [
@@ -515,7 +509,6 @@ const seedDatabase = async () => {
             }
         });
 
-        // 2. Prescription Order (Pending Review)
         const prescriptionOrder = await Order.create({
             customer: customer._id,
             items: [
@@ -536,7 +529,6 @@ const seedDatabase = async () => {
             }
         });
 
-        // 3. Create associated Prescription
         await Prescription.create({
             customer: customer._id,
             order: prescriptionOrder._id,
@@ -553,30 +545,10 @@ const seedDatabase = async () => {
             status: 'PENDING'
         });
 
-        // Update the order with prescription ID
-        const newlyCreatedPrescription = await Prescription.findOne({ order: prescriptionOrder._id });
-        prescriptionOrder.prescription = newlyCreatedPrescription._id;
-        await prescriptionOrder.save();
-
-        console.log('✅ Sample orders and prescriptions created');
-
-        console.log(`
-╔═══════════════════════════════════════════════════════════╗
-║                                                           ║
-║   ✅  Database seeded successfully!                      ║
-║                                                           ║
-║   👤  Admin Email: ${config.adminEmail}                 
-║   🔑  Admin Password: ${config.adminPassword}                    
-║                                                           ║
-║   📁  Categories: ${createdCategories.length}                                     ║
-║   💊  Products: ${createdProducts.length}                                      ║
-║                                                           ║
-╚═══════════════════════════════════════════════════════════╝
-    `);
-
+        console.log('✅ Seeding complete!');
         process.exit(0);
     } catch (error) {
-        console.error('❌ Error seeding database:', error);
+        console.error('❌ Seeding failed:', error);
         process.exit(1);
     }
 };

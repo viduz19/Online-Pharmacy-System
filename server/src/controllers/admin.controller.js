@@ -510,3 +510,69 @@ export const getCategories = async (req, res) => {
         errorResponse(res, error.message || 'Error retrieving categories', 500);
     }
 };
+
+// @desc    Get detailed sales report
+// @route   GET /api/admin/reports/sales
+// @access  Private/Admin
+export const getSalesReport = async (req, res) => {
+    try {
+        const { startDate, endDate } = req.query;
+        
+        const query = { paymentStatus: 'PAID' };
+        if (startDate && endDate) {
+            query.createdAt = {
+                $gte: new Date(startDate),
+                $lte: new Date(endDate)
+            };
+        }
+
+        const sales = await Order.find(query)
+            .populate('customer', 'firstName lastName email')
+            .sort({ createdAt: -1 });
+
+        const totalRevenue = sales.reduce((sum, order) => sum + order.total, 0);
+        const totalOrders = sales.length;
+
+        successResponse(res, 'Sales report retrieved successfully', {
+            sales,
+            summary: {
+                totalRevenue,
+                totalOrders,
+                avgOrderValue: totalOrders > 0 ? (totalRevenue / totalOrders).toFixed(2) : 0
+            }
+        });
+    } catch (error) {
+        console.error('Get sales report error:', error);
+        errorResponse(res, error.message || 'Error generating sales report', 500);
+    }
+};
+
+// @desc    Get all pharmacists (approved and pending)
+// @route   GET /api/admin/pharmacists
+// @access  Private/Admin
+export const getAllPharmacists = async (req, res) => {
+    try {
+        const pharmacists = await PharmacistProfile.find()
+            .populate('user', 'firstName lastName email phone status')
+            .sort({ createdAt: -1 });
+        successResponse(res, 'Pharmacists retrieved successfully', pharmacists);
+    } catch (error) {
+        console.error('Get all pharmacists error:', error);
+        errorResponse(res, error.message || 'Error retrieving pharmacists', 500);
+    }
+};
+
+// @desc    Get all customers
+// @route   GET /api/admin/customers
+// @access  Private/Admin
+export const getAllCustomers = async (req, res) => {
+    try {
+        const customers = await User.find({ role: 'CUSTOMER' })
+            .select('-password')
+            .sort({ createdAt: -1 });
+        successResponse(res, 'Customers retrieved successfully', customers);
+    } catch (error) {
+        console.error('Get all customers error:', error);
+        errorResponse(res, error.message || 'Error retrieving customers', 500);
+    }
+};

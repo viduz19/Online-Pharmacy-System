@@ -195,6 +195,18 @@ export const adminService = {
         const response = await api.get('/admin/reports/sales', { params });
         return response.data;
     },
+
+    // Get all pharmacists
+    getAllPharmacists: async (params = {}) => {
+        const response = await api.get('/admin/pharmacists', { params });
+        return response.data;
+    },
+
+    // Get all customers
+    getAllCustomers: async (params = {}) => {
+        const response = await api.get('/admin/customers', { params });
+        return response.data;
+    },
 };
 
 export const pharmacistService = {
