@@ -2,8 +2,25 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authService, orderService, prescriptionService } from '../services/api.service';
 import { useCart } from '../context/CartContext';
+import CustomerLayout from '../components/layout/CustomerLayout';
 import toast from 'react-hot-toast';
-import { ShoppingCart, Upload, Package, User, LogOut, FileText, CreditCard, Trash2, Plus, Minus, ArrowRight } from 'lucide-react';
+import { 
+    ShoppingCart, 
+    Upload, 
+    Package, 
+    User, 
+    FileText, 
+    CreditCard, 
+    Trash2, 
+    Plus, 
+    Minus, 
+    ArrowRight,
+    TrendingUp,
+    Clock,
+    CheckCircle,
+    ChevronRight,
+    MessageCircle
+} from 'lucide-react';
 
 function CustomerDashboard() {
     const navigate = useNavigate();
@@ -35,7 +52,6 @@ function CustomerDashboard() {
         }
     };
 
-
     const getStatusColor = (status) => {
         const colors = {
             PENDING_REVIEW: 'bg-yellow-100 text-yellow-800',
@@ -57,7 +73,6 @@ function CustomerDashboard() {
             const response = await prescriptionService.confirmPrescriptionOrder(prescriptionId);
             if (response.success) {
                 toast.success('Order confirmed! Proceeding to checkout...');
-                // fetchDashboardData(); // No need to fetch if we are navigating
                 const orderId = response.data._id;
                 navigate(`/checkout/${orderId}`);
             }
@@ -101,297 +116,224 @@ function CustomerDashboard() {
         }
     };
 
+    const stats = [
+        { label: 'Total Orders', value: orders.length, icon: Package, color: 'text-green-600', bg: 'bg-green-50' },
+        { label: 'Active Orders', value: orders.filter(o => !['DELIVERED', 'CANCELLED', 'REJECTED'].includes(o.status)).length, icon: Clock, color: 'text-orange-600', bg: 'bg-orange-50' },
+        { label: 'Prescriptions', value: prescriptions.length, icon: FileText, color: 'text-green-600', bg: 'bg-green-50' },
+        { label: 'Approved', value: prescriptions.filter(p => p.status === 'APPROVED').length, icon: CheckCircle, color: 'text-teal-600', bg: 'bg-teal-50' },
+    ];
+
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Navigation */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <CustomerLayout>
+            <div className="space-y-8">
                 {/* Welcome Section */}
-                <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg shadow-lg p-8 text-white mb-8">
-                    <h2 className="text-3xl font-bold mb-2">
-                        Welcome back, {user.firstName}! 👋
-                    </h2>
-                    <p className="text-blue-100">Manage your orders and prescriptions</p>
+                <div className="relative overflow-hidden bg-gradient-to-br from-green-700 via-green-600 to-teal-700 rounded-[2rem] shadow-2xl p-10 text-white">
+                    <div className="relative z-10">
+                        <h2 className="text-4xl font-black mb-3">
+                            Hello, {user.firstName}! 👋
+                        </h2>
+                        <p className="text-blue-100 text-lg font-medium max-w-md">
+                            Your health is our priority. Track your medical supplies and prescriptions here.
+                        </p>
+                    </div>
+                    {/* Decorative Circles */}
+                    <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
+                    <div className="absolute bottom-0 left-0 -ml-10 -mb-10 w-40 h-40 bg-blue-400/20 rounded-full blur-2xl"></div>
                 </div>
 
-                {/* Quick Actions - All Clickable */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                    <Link
-                        to="/products"
-                        className="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-all transform hover:scale-105 text-center"
-                    >
-                        <ShoppingCart className="w-12 h-12 text-blue-600 mx-auto mb-3" />
-                        <h3 className="font-semibold text-gray-900">Browse Products</h3>
-                        <p className="text-sm text-gray-600 mt-1">Shop OTC medicines</p>
-                        <div className="mt-3 text-blue-600 font-medium text-sm">Click to browse →</div>
-                    </Link>
-
-                    <Link
-                        to="/customer/upload-prescription"
-                        className="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-all transform hover:scale-105 text-center"
-                    >
-                        <Upload className="w-12 h-12 text-green-600 mx-auto mb-3" />
-                        <h3 className="font-semibold text-gray-900">Upload Prescription</h3>
-                        <p className="text-sm text-gray-600 mt-1">Get prescription meds</p>
-                        <div className="mt-3 text-green-600 font-medium text-sm">Click to upload →</div>
-                    </Link>
-
-                    <button
-                        onClick={() => toast.info('Viewing all orders')}
-                        className="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-all transform hover:scale-105 text-center"
-                    >
-                        <Package className="w-12 h-12 text-purple-600 mx-auto mb-3" />
-                        <h3 className="font-semibold text-gray-900">My Orders</h3>
-                        <p className="text-sm text-gray-600 mt-1">Track your orders</p>
-                        <div className="mt-3 text-purple-600 font-medium text-sm">Click to view →</div>
-                    </button>
-
-                    <button
-                        onClick={() => toast.info('Opening profile settings')}
-                        className="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-all transform hover:scale-105 text-center"
-                    >
-                        <User className="w-12 h-12 text-orange-600 mx-auto mb-3" />
-                        <h3 className="font-semibold text-gray-900">Profile Settings</h3>
-                        <p className="text-sm text-gray-600 mt-1">Update your info</p>
-                        <div className="mt-3 text-orange-600 font-medium text-sm">Click to edit →</div>
-                    </button>
+                {/* Stats Grid */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    {stats.map((stat, idx) => (
+                        <div key={idx} className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 transition-all hover:shadow-md">
+                            <div className={`w-12 h-12 ${stat.bg} ${stat.color} rounded-2xl flex items-center justify-center mb-4`}>
+                                <stat.icon className="w-6 h-6" />
+                            </div>
+                            <p className="text-gray-500 text-sm font-bold uppercase tracking-wider">{stat.label}</p>
+                            <h4 className="text-3xl font-black text-gray-900 mt-1">{stat.value}</h4>
+                        </div>
+                    ))}
                 </div>
 
-                {/* Current Cart Section */}
-                {cartItems.length > 0 && (
-                    <div className="bg-white rounded-lg shadow-md p-6 mb-8 border-l-4 border-blue-600">
-                        <div className="flex justify-between items-center mb-6">
-                            <h3 className="text-xl font-bold text-gray-900 flex items-center">
-                                <ShoppingCart className="w-6 h-6 mr-2 text-blue-600" />
-                                Items in Your Cart
-                            </h3>
-                            <Link to="/cart" className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center">
-                                Edit Cart <ArrowRight className="w-4 h-4 ml-1" />
-                            </Link>
+                {/* Main Content Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    {/* Left Column: Recent Orders & Prescriptions */}
+                    <div className="lg:col-span-2 space-y-8">
+                        {/* Recent Orders */}
+                        <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
+                            <div className="p-8 border-b border-gray-50 flex justify-between items-center">
+                                <h3 className="text-xl font-bold text-gray-900 flex items-center">
+                                    <Package className="w-6 h-6 mr-3 text-green-600" />
+                                    Recent Orders
+                                </h3>
+                                <Link to="/customer/orders" className="text-green-600 hover:text-blue-700 text-sm font-black flex items-center group">
+                                    View All <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                                </Link>
+                            </div>
+                            <div className="p-4">
+                                {orders.length === 0 ? (
+                                    <div className="text-center py-10">
+                                        <Package className="w-16 h-16 text-gray-200 mx-auto mb-4" />
+                                        <p className="text-gray-400 font-medium">No orders yet</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-3">
+                                        {orders.slice(0, 3).map((order) => (
+                                            <div 
+                                                key={order._id}
+                                                onClick={() => navigate(`/customer/orders/${order._id}`)}
+                                                className="flex items-center justify-between p-4 rounded-2xl hover:bg-gray-50 transition-colors cursor-pointer border border-transparent hover:border-gray-100"
+                                            >
+                                                <div className="flex items-center space-x-4">
+                                                    <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-green-600 font-bold border border-blue-100">
+                                                        #{order.orderNumber.slice(-3)}
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-bold text-gray-900">Order #{order.orderNumber}</p>
+                                                        <p className="text-xs text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="text-right">
+                                                    <p className="font-black text-gray-900 text-sm">Rs. {order.total.toLocaleString()}</p>
+                                                    <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider mt-1 ${getStatusColor(order.status)}`}>
+                                                        {order.status.replace(/_/g, ' ')}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-3">
-                                {cartItems.map((item) => (
-                                    <div key={item._id} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
-                                        <div>
-                                            <p className="font-medium text-gray-900">{item.name}</p>
-                                            <p className="text-xs text-gray-500">Qty: {item.quantity} × Rs. {item.price}</p>
-                                        </div>
-                                        <div className="flex items-center space-x-2">
-                                            <button
-                                                onClick={() => updateQuantity(item._id, item.quantity - 1)}
-                                                className="p-1 hover:bg-gray-200 rounded text-gray-600"
-                                            >
-                                                <Minus className="w-4 h-4" />
-                                            </button>
-                                            <span className="text-sm font-bold w-4 text-center">{item.quantity}</span>
-                                            <button
-                                                onClick={() => updateQuantity(item._id, item.quantity + 1)}
-                                                className="p-1 hover:bg-gray-200 rounded text-gray-600"
-                                            >
-                                                <Plus className="w-4 h-4" />
-                                            </button>
-                                            <button
-                                                onClick={() => removeFromCart(item._id)}
-                                                className="ml-2 text-red-500 hover:text-red-700"
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))}
+                        {/* Recent Prescriptions */}
+                        <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
+                            <div className="p-8 border-b border-gray-50 flex justify-between items-center">
+                                <h3 className="text-xl font-bold text-gray-900 flex items-center">
+                                    <FileText className="w-6 h-6 mr-3 text-green-600" />
+                                    Prescription Status
+                                </h3>
+                                <Link to="/customer/prescriptions" className="text-green-600 hover:text-green-700 text-sm font-black flex items-center group">
+                                    View All <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                                </Link>
                             </div>
+                            <div className="p-4">
+                                {prescriptions.length === 0 ? (
+                                    <div className="text-center py-10">
+                                        <FileText className="w-16 h-16 text-gray-200 mx-auto mb-4" />
+                                        <p className="text-gray-400 font-medium">No prescriptions found</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-3">
+                                        {prescriptions.slice(0, 3).map((pres) => (
+                                            <div 
+                                                key={pres._id}
+                                                onClick={() => navigate(`/customer/prescriptions/${pres._id}`)}
+                                                className="flex items-center justify-between p-4 rounded-2xl hover:bg-gray-50 transition-colors cursor-pointer border border-transparent hover:border-gray-100"
+                                            >
+                                                <div className="flex items-center space-x-4">
+                                                    <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center text-green-600">
+                                                        <FileText className="w-6 h-6" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-bold text-gray-900">
+                                                            {pres.requestedMedicines.length > 0 ? pres.requestedMedicines[0].productName : 'Prescription Request'}
+                                                        </p>
+                                                        <p className="text-xs text-gray-500">{new Date(pres.createdAt).toLocaleDateString()}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center space-x-3">
+                                                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${getStatusColor(pres.status)}`}>
+                                                        {pres.status}
+                                                    </span>
+                                                    {pres.status === 'APPROVED' && (
+                                                        <div className="w-2 h-2 bg-green-500 rounded-full animate-ping"></div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
 
-                            <div className="bg-blue-50 rounded-lg p-6 flex flex-col justify-between">
-                                <div>
-                                    <h4 className="font-bold text-blue-900 mb-4">Order Summary</h4>
-                                    <div className="flex justify-between text-blue-800 mb-2">
+                    {/* Right Column: Cart Quick View & Support */}
+                    <div className="space-y-8">
+                        {/* Cart Summary */}
+                        {cartItems.length > 0 && (
+                            <div className="bg-white rounded-[2rem] shadow-xl border-t-4 border-blue-600 p-8">
+                                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                                    <ShoppingCart className="w-6 h-6 mr-2 text-green-600" />
+                                    Shopping Cart
+                                </h3>
+                                <div className="space-y-4 mb-8 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+                                    {cartItems.map((item) => (
+                                        <div key={item._id} className="flex justify-between items-center text-sm">
+                                            <div className="flex-1">
+                                                <p className="font-bold text-gray-800 truncate">{item.name}</p>
+                                                <p className="text-gray-500">Qty: {item.quantity}</p>
+                                            </div>
+                                            <p className="font-black text-gray-900 ml-4">Rs. {(item.price * item.quantity).toLocaleString()}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="border-t border-gray-100 pt-6 space-y-3">
+                                    <div className="flex justify-between text-gray-600 text-sm">
                                         <span>Subtotal</span>
-                                        <span>Rs. {(getCartTotal() || 0).toLocaleString()}</span>
+                                        <span className="font-bold">Rs. {getCartTotal().toLocaleString()}</span>
                                     </div>
-                                    <div className="flex justify-between text-blue-800 mb-4">
-                                        <span>Delivery Fee</span>
-                                        <span>Rs. 300</span>
-                                    </div>
-                                    <div className="flex justify-between text-lg font-bold text-blue-900 border-t border-blue-200 pt-3">
+                                    <div className="flex justify-between text-xl font-black text-gray-900 pt-2">
                                         <span>Total</span>
-                                        <span>Rs. {((getCartTotal() || 0) + 300).toLocaleString()}</span>
+                                        <span className="text-green-600 font-black">Rs. {(getCartTotal() + 300).toLocaleString()}</span>
                                     </div>
                                 </div>
                                 <button
                                     onClick={handleCartCheckout}
                                     disabled={isCheckingOut}
-                                    className="mt-6 w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition-all flex items-center justify-center space-x-2 shadow-md disabled:bg-blue-400"
+                                    className="w-full mt-8 py-4 bg-blue-600 text-white font-black rounded-2xl hover:bg-blue-700 shadow-xl shadow-blue-100 transition-all flex items-center justify-center space-x-2 disabled:bg-blue-300"
                                 >
-                                    <CreditCard className="w-5 h-5" />
-                                    <span>{isCheckingOut ? 'Placing Order...' : 'Checkout Now'}</span>
+                                    {isCheckingOut ? (
+                                        <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                    ) : (
+                                        <>
+                                            <CreditCard className="w-5 h-5" />
+                                            <span>Checkout Now</span>
+                                        </>
+                                    )}
                                 </button>
                             </div>
+                        )}
+
+                        {/* Quick Help */}
+                        <div className="bg-gray-900 rounded-[2rem] p-8 text-white shadow-2xl">
+                            <h3 className="text-xl font-bold mb-4">Need Help?</h3>
+                            <p className="text-gray-400 text-sm mb-8 leading-relaxed">
+                                Chat with our registered pharmacists regarding medicine availability or dosage.
+                            </p>
+                            <button 
+                                onClick={() => {
+                                    const phoneNumber = '+94771234567';
+                                    const message = 'Hello, I need assistance with my medical order.';
+                                    window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
+                                }}
+                                className="w-full py-4 bg-[#25D366] text-white font-black rounded-2xl hover:opacity-90 transition-all flex items-center justify-center space-x-2 shadow-xl shadow-green-900/20"
+                            >
+                                <MessageCircle className="w-6 h-6" />
+                                <span>WhatsApp Us</span>
+                            </button>
                         </div>
                     </div>
-                )}
-
-                {/* Recent Orders - Clickable */}
-                <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-                    <div className="flex justify-between items-center mb-6">
-                        <h3 className="text-xl font-bold text-gray-900">Recent Orders</h3>
-                        <button
-                            onClick={() => toast.info('Viewing all orders')}
-                            className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-                        >
-                            View All →
-                        </button>
-                    </div>
-
-                    {orders.length === 0 ? (
-                        <div className="text-center py-8">
-                            <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                            <p className="text-gray-500">No orders yet</p>
-                            <Link to="/products" className="text-blue-600 hover:text-blue-700 text-sm mt-2 inline-block">
-                                Start shopping →
-                            </Link>
-                        </div>
-                    ) : (
-                        <div className="space-y-4">
-                            {orders.map((order) => (
-                                <button
-                                    key={order._id}
-                                    onClick={() => toast.info(`Viewing order ${order.orderNumber}`)}
-                                    className="w-full border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all text-left"
-                                >
-                                    <div className="flex justify-between items-start">
-                                        <div className="flex-1">
-                                            <p className="font-semibold text-gray-900">Order #{order.orderNumber}</p>
-                                            <div className="mt-2 space-y-1">
-                                                {order.items.map((item, idx) => (
-                                                    <p key={idx} className="text-sm text-gray-600">
-                                                        • {item.productName} x{item.quantity}
-                                                    </p>
-                                                ))}
-                                            </div>
-                                            <p className="text-sm font-medium text-gray-900 mt-2">
-                                                Total: Rs. {(order?.total || order?.totalAmount || 0).toLocaleString()}
-                                            </p>
-                                            <p className="text-xs text-gray-500 mt-1">
-                                                {new Date(order.createdAt).toLocaleDateString('en-US', {
-                                                    year: 'numeric',
-                                                    month: 'long',
-                                                    day: 'numeric'
-                                                })}
-                                            </p>
-                                        </div>
-                                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
-                                            {order.status.replace(/_/g, ' ')}
-                                        </span>
-                                    </div>
-                                </button>
-                            ))}
-                        </div>
-                    )}
-                </div>
-
-                {/* Prescription Requests - Clickable */}
-                <div className="bg-white rounded-lg shadow-md p-6">
-                    <div className="flex justify-between items-center mb-6">
-                        <h3 className="text-xl font-bold text-gray-900">Prescription Requests</h3>
-                        <button
-                            onClick={() => toast.info('Viewing all prescriptions')}
-                            className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-                        >
-                            View All →
-                        </button>
-                    </div>
-
-                    {prescriptions.length === 0 ? (
-                        <div className="text-center py-8">
-                            <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                            <p className="text-gray-500">No prescription requests</p>
-                            <Link to="/customer/upload-prescription" className="text-blue-600 hover:text-blue-700 text-sm mt-2 inline-block">
-                                Upload prescription →
-                            </Link>
-                        </div>
-                    ) : (
-                        <div className="space-y-4">
-                            {prescriptions.map((prescription) => (
-                                <div key={prescription._id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all">
-                                    <div className="flex justify-between items-start mb-3">
-                                        <div className="flex-1">
-                                            <p className="font-semibold text-gray-900">
-                                                {prescription.requestedMedicines.length} medicine(s) requested
-                                            </p>
-                                            <div className="mt-2 space-y-1">
-                                                {prescription.requestedMedicines.map((med, idx) => (
-                                                    <p key={idx} className="text-sm text-gray-600">
-                                                        • {med.productName} - Qty: {med.quantity}
-                                                    </p>
-                                                ))}
-                                            </div>
-                                            <p className="text-sm text-gray-600 mt-2">
-                                                {(prescription.files || []).length} file(s) uploaded
-                                            </p>
-                                            <p className="text-xs text-gray-500 mt-1">
-                                                {new Date(prescription.createdAt).toLocaleDateString('en-US', {
-                                                    year: 'numeric',
-                                                    month: 'long',
-                                                    day: 'numeric'
-                                                })}
-                                            </p>
-                                        </div>
-                                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(prescription.status)}`}>
-                                            {prescription.status.replace(/_/g, ' ')}
-                                        </span>
-                                    </div>
-
-                                    {prescription.reviewNotes && (
-                                        <div className="mt-2 mb-3 p-3 bg-blue-50 border-l-4 border-blue-400 rounded">
-                                            <p className="text-xs font-bold text-blue-800 uppercase tracking-wider mb-1">Message from Pharmacist:</p>
-                                            <p className="text-sm text-blue-700 italic">"{prescription.reviewNotes}"</p>
-                                        </div>
-                                    )}
-
-                                    {prescription.status === 'REJECTED' && prescription.rejectionReason && (
-                                        <div className="mt-2 mb-3 p-3 bg-red-50 border-l-4 border-red-400 rounded">
-                                            <p className="text-xs font-bold text-red-800 uppercase tracking-wider mb-1">Rejection Reason:</p>
-                                            <p className="text-sm text-red-700">{prescription.rejectionReason}</p>
-                                        </div>
-                                    )}
-
-                                    {prescription.status === 'APPROVED' && prescription.order && (
-                                        <div className="mt-3 p-4 bg-green-50 border border-green-200 rounded-lg">
-                                            <div className="flex items-center justify-between">
-                                                <div>
-                                                    <p className="text-sm font-semibold text-green-900">
-                                                        ✓ Prescription Approved!
-                                                    </p>
-                                                    <p className="text-sm text-green-800 mt-1">
-                                                        Total Amount: Rs. {(prescription?.order?.total || prescription?.order?.totalAmount || 0).toLocaleString()}
-                                                    </p>
-                                                </div>
-                                                <button
-                                                    onClick={() => handleConfirmOrder(prescription._id)}
-                                                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2"
-                                                >
-                                                    <CreditCard className="w-4 h-4" />
-                                                    <span>Confirm Order</span>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    )}
                 </div>
             </div>
-        </div>
+        </CustomerLayout>
     );
 }
 

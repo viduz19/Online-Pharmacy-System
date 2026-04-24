@@ -12,11 +12,11 @@ import {
     LogOut,
     Menu,
     X,
-    Bell,
-    User
+    Bell
 } from 'lucide-react';
 import { authService } from '../../services/api.service';
 import toast from 'react-hot-toast';
+import logo from "../../assets/Online Pharmacy System.png";
 
 const sidebarItems = [
     { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
@@ -43,24 +43,25 @@ function AdminLayout({ children }) {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 flex">
+        <div className="min-h-screen bg-gray-50 flex font-inter">
             {/* Sidebar */}
             <aside 
                 className={`${
                     isSidebarOpen ? 'w-64' : 'w-20'
-                } bg-white shadow-xl transition-all duration-300 ease-in-out fixed h-full z-30`}
+                } bg-white shadow-xl transition-all duration-300 ease-in-out fixed h-full z-30 border-r border-gray-100`}
             >
                 <div className="flex flex-col h-full">
                     {/* Sidebar Header */}
-                    <div className="h-16 flex items-center justify-between px-6 border-b border-gray-100">
-                        {isSidebarOpen ? (
-                            <span className="text-xl font-bold text-blue-600 truncate">Viduz Admin</span>
-                        ) : (
-                            <span className="text-xl font-bold text-blue-600">V</span>
-                        )}
+                    <div className="h-16 flex items-center justify-between px-4 border-b border-gray-100">
+                        <Link to="/" className="flex items-center gap-2 overflow-hidden">
+                            <img src={logo} alt="Viduz Pharmacy Logo" className="w-10 h-10 object-contain shrink-0" />
+                            {isSidebarOpen && (
+                                <span className="text-lg font-bold text-blue-600 truncate">Viduz Pharmacy</span>
+                            )}
+                        </Link>
                         <button 
                             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                            className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
+                            className="p-1 rounded-lg hover:bg-gray-100 transition-colors shrink-0"
                         >
                             {isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
                         </button>
@@ -72,7 +73,7 @@ function AdminLayout({ children }) {
                             <Link
                                 key={item.name}
                                 to={item.path}
-                                className={`flex items-center px-6 py-3 transition-all duration-200 group ${
+                                className={`flex items-center px-6 py-3 transition-all duration-200 group relative ${
                                     location.pathname === item.path
                                         ? 'bg-blue-50 text-blue-600 font-semibold'
                                         : 'text-gray-600 hover:bg-gray-50 hover:text-blue-600'
@@ -81,7 +82,7 @@ function AdminLayout({ children }) {
                                 <item.icon className={`w-5 h-5 ${
                                     location.pathname === item.path ? 'text-blue-600' : 'text-gray-400 group-hover:text-blue-600'
                                 }`} />
-                                {isSidebarOpen && <span className="ml-4">{item.name}</span>}
+                                {isSidebarOpen && <span className="ml-4 text-sm font-medium">{item.name}</span>}
                                 {location.pathname === item.path && isSidebarOpen && (
                                     <div className="ml-auto w-1.5 h-6 bg-blue-600 rounded-full" />
                                 )}
@@ -98,7 +99,7 @@ function AdminLayout({ children }) {
                             }`}
                         >
                             <LogOut className="w-5 h-5" />
-                            {isSidebarOpen && <span className="ml-4 font-medium">Logout</span>}
+                            {isSidebarOpen && <span className="ml-4 font-medium text-sm">Logout</span>}
                         </button>
                     </div>
                 </div>
@@ -111,25 +112,25 @@ function AdminLayout({ children }) {
                 }`}
             >
                 {/* Header */}
-                <header className="h-16 bg-white shadow-sm flex items-center justify-between px-8 sticky top-0 z-20">
+                <header className="h-16 bg-white shadow-sm flex items-center justify-between px-8 sticky top-0 z-20 border-b border-gray-100">
                     <div className="flex items-center space-x-4">
-                        <h2 className="text-xl font-semibold text-gray-800">
+                        <h2 className="text-xl font-bold text-gray-800">
                             {sidebarItems.find(item => item.path === location.pathname)?.name || 'Admin'}
                         </h2>
                     </div>
 
                     <div className="flex items-center space-x-6">
-                        <button className="relative text-gray-500 hover:text-blue-600 transition-colors">
+                        <button className="relative text-gray-500 hover:text-blue-600 transition-colors p-2 rounded-lg hover:bg-gray-50">
                             <Bell className="w-6 h-6" />
-                            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">3</span>
+                            <span className="absolute top-2 right-2 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full border-2 border-white font-bold">3</span>
                         </button>
                         
                         <div className="flex items-center space-x-3 border-l pl-6 border-gray-200">
-                            <div className="text-right">
-                                <p className="text-sm font-semibold text-gray-900">{currentUser?.firstName} {currentUser?.lastName}</p>
-                                <p className="text-xs text-gray-500 capitalize">{currentUser?.role?.toLowerCase()}</p>
+                            <div className="text-right hidden sm:block">
+                                <p className="text-sm font-bold text-gray-900">{currentUser?.firstName} {currentUser?.lastName}</p>
+                                <p className="text-xs text-blue-600 font-medium capitalize tracking-tight">{currentUser?.role?.toLowerCase() || 'admin'}</p>
                             </div>
-                            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border-2 border-white shadow-sm">
+                            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border-2 border-white shadow-md">
                                 {currentUser?.firstName?.charAt(0)}{currentUser?.lastName?.charAt(0)}
                             </div>
                         </div>

@@ -2,12 +2,11 @@ import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
     LayoutDashboard, 
-    FileText, 
-    ShoppingCart, 
     Package, 
-    CheckCircle, 
-    XCircle, 
-    MessageSquare, 
+    ShoppingCart, 
+    FileText, 
+    Upload, 
+    MessageCircle, 
     User, 
     Settings, 
     LogOut,
@@ -16,31 +15,40 @@ import {
     Bell
 } from 'lucide-react';
 import { authService } from '../../services/api.service';
+import { useCart } from '../../context/CartContext';
 import toast from 'react-hot-toast';
 import logo from "../../assets/Online Pharmacy System.png";
 
 const sidebarItems = [
-    { name: 'Dashboard', path: '/pharmacist/dashboard', icon: LayoutDashboard },
-    { name: 'Pending Reviews', path: '/pharmacist/prescriptions/pending', icon: FileText },
-    { name: 'Orders', path: '/pharmacist/orders', icon: ShoppingCart },
-    { name: 'Inventory', path: '/pharmacist/products', icon: Package },
-    { name: 'Approved', path: '/pharmacist/prescriptions/approved', icon: CheckCircle },
-    { name: 'Rejected', path: '/pharmacist/prescriptions/rejected', icon: XCircle },
-    { name: 'WhatsApp', path: '/pharmacist/whatsapp', icon: MessageSquare },
-    { name: 'Profile', path: '/pharmacist/profile', icon: User },
-    { name: 'Settings', path: '/pharmacist/settings', icon: Settings },
+    { name: 'Dashboard', path: '/customer/dashboard', icon: LayoutDashboard },
+    { name: 'Products', path: '/products', icon: Package },
+    { name: 'Cart', path: '/cart', icon: ShoppingCart },
+    { name: 'Orders', path: '/customer/orders', icon: Package },
+    { name: 'Prescriptions', path: '/customer/prescriptions', icon: FileText },
+    { name: 'Upload Prescription', path: '/customer/upload-prescription', icon: Upload },
+    { name: 'WhatsApp Support', path: '#whatsapp', icon: MessageCircle },
+    { name: 'Profile', path: '/customer/profile', icon: User },
+    { name: 'Settings', path: '/customer/settings', icon: Settings },
 ];
 
-function PharmacistLayout({ children }) {
+function CustomerLayout({ children }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const navigate = useNavigate();
     const location = useLocation();
-    const currentUser = authService.getCurrentUser();
+    const currentUser = authService.getCurrentUser() || { firstName: 'Customer' };
+    const { getCartCount } = useCart();
 
     const handleLogout = () => {
         authService.logout();
         navigate('/login');
         toast.success('Logged out successfully');
+    };
+
+    const handleWhatsAppSupport = () => {
+        const phoneNumber = '+94771234567'; 
+        const message = 'Hello, I have a question about my order/prescription.';
+        const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+        window.open(url, '_blank');
     };
 
     return (
@@ -57,7 +65,7 @@ function PharmacistLayout({ children }) {
                         <Link to="/" className="flex items-center gap-2 overflow-hidden">
                             <img src={logo} alt="Viduz Pharmacy Logo" className="w-10 h-10 object-contain shrink-0" />
                             {isSidebarOpen && (
-                                <span className="text-lg font-bold text-yellow-600 truncate">Viduz Pharmacy</span>
+                                <span className="text-lg font-bold text-green-600 truncate">Viduz Pharmacy</span>
                             )}
                         </Link>
                         <button 
@@ -71,23 +79,41 @@ function PharmacistLayout({ children }) {
                     {/* Sidebar Items */}
                     <nav className="flex-1 overflow-y-auto py-4 space-y-1">
                         {sidebarItems.map((item) => (
-                            <Link
-                                key={item.name}
-                                to={item.path}
-                                className={`flex items-center px-6 py-3.5 transition-all duration-200 group relative ${
-                                    location.pathname === item.path
-                                        ? 'bg-yellow-50 text-yellow-600 font-semibold'
-                                        : 'text-gray-600 hover:bg-gray-50 hover:text-yellow-600'
-                                }`}
-                            >
-                                <item.icon className={`w-5 h-5 ${
-                                    location.pathname === item.path ? 'text-yellow-600' : 'text-gray-400 group-hover:text-yellow-600'
-                                }`} />
-                                {isSidebarOpen && <span className="ml-4 text-sm font-medium">{item.name}</span>}
-                                {location.pathname === item.path && isSidebarOpen && (
-                                    <div className="ml-auto w-1.5 h-6 bg-yellow-600 rounded-full" />
+                            <div key={item.name}>
+                                {item.path === '#whatsapp' ? (
+                                    <button
+                                        onClick={handleWhatsAppSupport}
+                                        className="w-full flex items-center px-6 py-3 transition-all duration-200 group text-gray-600 hover:bg-green-50 hover:text-green-600"
+                                    >
+                                        <item.icon className="w-5 h-5 text-gray-400 group-hover:text-green-600" />
+                                        {isSidebarOpen && <span className="ml-4 font-medium">{item.name}</span>}
+                                    </button>
+                                ) : (
+                                    <Link
+                                        to={item.path}
+                                        className={`flex items-center px-6 py-3 transition-all duration-200 group ${
+                                            location.pathname === item.path
+                                                ? 'bg-green-50 text-green-600 font-semibold'
+                                                : 'text-gray-600 hover:bg-gray-50 hover:text-green-600'
+                                        }`}
+                                    >
+                                        <div className="relative">
+                                            <item.icon className={`w-5 h-5 ${
+                                                location.pathname === item.path ? 'text-green-600' : 'text-gray-400 group-hover:text-green-600'
+                                            }`} />
+                                            {item.name === 'Cart' && getCartCount() > 0 && (
+                                                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">
+                                                    {getCartCount()}
+                                                </span>
+                                            )}
+                                        </div>
+                                        {isSidebarOpen && <span className="ml-4">{item.name}</span>}
+                                        {location.pathname === item.path && isSidebarOpen && (
+                                            <div className="ml-auto w-1.5 h-6 bg-green-600 rounded-full" />
+                                        )}
+                                    </Link>
                                 )}
-                            </Link>
+                            </div>
                         ))}
                     </nav>
 
@@ -116,12 +142,12 @@ function PharmacistLayout({ children }) {
                 <header className="h-16 bg-white shadow-sm flex items-center justify-between px-8 sticky top-0 z-20 border-b border-gray-100">
                     <div className="flex items-center space-x-4">
                         <h2 className="text-xl font-bold text-gray-800">
-                            {sidebarItems.find(item => item.path === location.pathname)?.name || 'Pharmacist'}
+                            {sidebarItems.find(item => item.path === location.pathname)?.name || 'Dashboard'}
                         </h2>
                     </div>
 
                     <div className="flex items-center space-x-6">
-                        <button className="relative text-gray-500 hover:text-yellow-600 transition-colors p-2 rounded-lg hover:bg-gray-50">
+                        <button className="relative text-gray-500 hover:text-green-600 transition-colors p-2 rounded-lg hover:bg-gray-50">
                             <Bell className="w-6 h-6" />
                             <span className="absolute top-2 right-2 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full border-2 border-white font-bold">2</span>
                         </button>
@@ -129,9 +155,9 @@ function PharmacistLayout({ children }) {
                         <div className="flex items-center space-x-3 border-l pl-6 border-gray-200">
                             <div className="text-right hidden sm:block">
                                 <p className="text-sm font-bold text-gray-900">{currentUser?.firstName} {currentUser?.lastName}</p>
-                                <p className="text-xs text-yellow-600 font-medium capitalize tracking-tight">{currentUser?.role?.toLowerCase() || 'pharmacist'}</p>
+                                <p className="text-xs text-green-600 font-medium capitalize tracking-tight">{currentUser?.role?.toLowerCase() || 'customer'}</p>
                             </div>
-                            <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600 font-bold border-2 border-white shadow-md">
+                            <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold border-2 border-white shadow-md">
                                 {currentUser?.firstName?.charAt(0)}{currentUser?.lastName?.charAt(0)}
                             </div>
                         </div>
@@ -146,4 +172,4 @@ function PharmacistLayout({ children }) {
     );
 }
 
-export default PharmacistLayout;
+export default CustomerLayout;

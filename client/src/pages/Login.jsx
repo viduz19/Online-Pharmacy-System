@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authService } from '../services/api.service';
 import toast from 'react-hot-toast';
+import logo from "../assets/Online Pharmacy System.png";
 
 function Login() {
     const navigate = useNavigate();
@@ -60,21 +61,22 @@ function Login() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 font-inter">
             <div className="max-w-md w-full">
-                <div className="bg-white rounded-2xl shadow-xl p-8">
+                <div className="bg-white rounded-3xl shadow-xl p-10 border border-gray-100">
                     {/* Header */}
-                    <div className="text-center mb-8">
-                        <h1 className="text-4xl font-bold text-gray-900 mb-2">
-                            🏥 Viduz Pharmacy
+                    <div className="text-center mb-10">
+                        <img src={logo} alt="Viduz Pharmacy Logo" className="w-20 h-20 mx-auto mb-4 object-contain" />
+                        <h1 className="text-3xl font-black text-gray-900 mb-2 tracking-tight">
+                            Viduz Pharmacy
                         </h1>
-                        <p className="text-gray-600">Sign in to your account</p>
+                        <p className="text-gray-500 font-medium uppercase tracking-widest text-xs">Sign in to your account</p>
                     </div>
 
                     {/* Login Form */}
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                            <label htmlFor="email" className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">
                                 Email Address
                             </label>
                             <input
@@ -84,13 +86,13 @@ function Login() {
                                 required
                                 value={formData.email}
                                 onChange={handleChange}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium text-gray-900"
                                 placeholder="admin@viduzpharmacy.lk"
                             />
                         </div>
 
                         <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                            <label htmlFor="password" className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">
                                 Password
                             </label>
                             <input
@@ -100,7 +102,7 @@ function Login() {
                                 required
                                 value={formData.password}
                                 onChange={handleChange}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium text-gray-900"
                                 placeholder="••••••••"
                             />
                         </div>
@@ -108,33 +110,38 @@ function Login() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            className="w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-blue-700 hover:shadow-xl shadow-blue-100 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                         >
                             {loading ? 'Signing in...' : 'Sign In'}
                         </button>
                     </form>
 
                     {/* Demo Credentials */}
-                    <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-                        <p className="text-sm font-medium text-blue-900 mb-2">Demo Credentials:</p>
-                        <p className="text-xs text-blue-700">
-                            <strong>Admin:</strong> admin@viduzpharmacy.lk / Admin@123
-                        </p>
+                    <div className="mt-10 p-5 bg-blue-50 rounded-2xl border border-blue-100/50">
+                        <p className="text-[10px] font-black text-blue-900 uppercase tracking-widest mb-3">Demo Credentials:</p>
+                        <div className="space-y-2">
+                            <p className="text-xs text-blue-700 font-medium">
+                                <span className="opacity-60">Admin:</span> admin@viduzpharmacy.lk
+                            </p>
+                            <p className="text-xs text-blue-700 font-medium">
+                                <span className="opacity-60">Customer:</span> kasun.perera@gmail.com
+                            </p>
+                        </div>
                     </div>
 
                     {/* Register Link */}
-                    <div className="mt-6 text-center">
-                        <p className="text-sm text-gray-600">
+                    <div className="mt-8 text-center">
+                        <p className="text-sm text-gray-500 font-medium">
                             Don't have an account?{' '}
-                            <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500">
+                            <Link to="/register" className="font-black text-blue-600 hover:text-blue-700 underline decoration-2 underline-offset-4 decoration-blue-100 hover:decoration-blue-200 transition-all">
                                 Register here
                             </Link>
                         </p>
                     </div>
 
                     {/* Back to Home */}
-                    <div className="mt-4 text-center">
-                        <Link to="/" className="text-sm text-gray-500 hover:text-gray-700">
+                    <div className="mt-6 text-center">
+                        <Link to="/" className="text-xs text-gray-400 font-bold hover:text-gray-600 uppercase tracking-widest transition-all">
                             ← Back to Home
                         </Link>
                     </div>

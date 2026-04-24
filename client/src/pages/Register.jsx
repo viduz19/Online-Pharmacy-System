@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authService } from '../services/api.service';
 import toast from 'react-hot-toast';
+import logo from "../assets/Online Pharmacy System.png";
 
 function Register() {
     const navigate = useNavigate();
@@ -125,54 +126,60 @@ function Register() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 font-inter">
             <div className="max-w-3xl mx-auto">
-                <div className="bg-white rounded-2xl shadow-xl p-8">
+                <div className="bg-white rounded-3xl shadow-xl p-10 border border-gray-100">
                     {/* Header */}
-                    <div className="text-center mb-8">
-                        <h1 className="text-4xl font-bold text-gray-900 mb-2">
-                            🏥 Create Account
+                    <div className="text-center mb-10">
+                        <img src={logo} alt="Viduz Pharmacy Logo" className="w-16 h-16 mx-auto mb-4 object-contain" />
+                        <h1 className="text-3xl font-black text-gray-900 mb-2 tracking-tight">
+                            Create Account
                         </h1>
-                        <p className="text-gray-600">Join Viduz Pharmacy today</p>
+                        <p className="text-gray-500 font-medium uppercase tracking-widest text-xs">Join Viduz Pharmacy today</p>
                     </div>
 
                     {/* Role Selection */}
-                    <div className="mb-8">
-                        <label className="block text-sm font-medium text-gray-700 mb-3">
+                    <div className="mb-10">
+                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-4 ml-1">
                             I am registering as:
                         </label>
                         <div className="grid grid-cols-2 gap-4">
                             <button
                                 type="button"
                                 onClick={() => setRole('CUSTOMER')}
-                                className={`p-4 border-2 rounded-lg font-medium transition-all ${role === 'CUSTOMER'
-                                    ? 'border-blue-600 bg-blue-50 text-blue-700'
-                                    : 'border-gray-300 text-gray-700 hover:border-gray-400'
+                                className={`p-5 border-2 rounded-2xl font-bold transition-all flex flex-col items-center gap-2 ${role === 'CUSTOMER'
+                                    ? 'border-green-600 bg-green-50 text-green-700 shadow-md shadow-green-100'
+                                    : 'border-gray-100 bg-gray-50 text-gray-500 hover:border-gray-200'
                                     }`}
                             >
-                                👤 Customer
+                                <span className="text-2xl">👤</span>
+                                <span>Customer</span>
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setRole('PHARMACIST')}
-                                className={`p-4 border-2 rounded-lg font-medium transition-all ${role === 'PHARMACIST'
-                                    ? 'border-blue-600 bg-blue-50 text-blue-700'
-                                    : 'border-gray-300 text-gray-700 hover:border-gray-400'
+                                className={`p-5 border-2 rounded-2xl font-bold transition-all flex flex-col items-center gap-2 ${role === 'PHARMACIST'
+                                    ? 'border-yellow-500 bg-yellow-50 text-yellow-700 shadow-md shadow-yellow-100'
+                                    : 'border-gray-100 bg-gray-50 text-gray-500 hover:border-gray-200'
                                     }`}
                             >
-                                💊 Pharmacist
+                                <span className="text-2xl">💊</span>
+                                <span>Pharmacist</span>
                             </button>
                         </div>
                     </div>
 
                     {/* Registration Form */}
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                    <form onSubmit={handleSubmit} className="space-y-10">
                         {/* Personal Information */}
                         <div>
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Personal Information</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="flex items-center gap-2 mb-6">
+                                <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600 font-black text-xs">1</div>
+                                <h3 className="text-lg font-bold text-gray-900 tracking-tight">Personal Information</h3>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">
                                         First Name *
                                     </label>
                                     <input
@@ -181,11 +188,11 @@ function Register() {
                                         required
                                         value={formData.firstName}
                                         onChange={handleChange}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        className="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">
                                         Last Name *
                                     </label>
                                     <input
@@ -194,11 +201,11 @@ function Register() {
                                         required
                                         value={formData.lastName}
                                         onChange={handleChange}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        className="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">
                                         Email Address *
                                     </label>
                                     <input
@@ -207,11 +214,11 @@ function Register() {
                                         required
                                         value={formData.email}
                                         onChange={handleChange}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        className="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">
                                         Phone Number *
                                     </label>
                                     <input
@@ -221,7 +228,7 @@ function Register() {
                                         value={formData.phone}
                                         onChange={handleChange}
                                         placeholder="+94771234567"
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        className="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium"
                                     />
                                 </div>
                             </div>
@@ -229,10 +236,13 @@ function Register() {
 
                         {/* Address */}
                         <div>
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Address</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="flex items-center gap-2 mb-6">
+                                <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600 font-black text-xs">2</div>
+                                <h3 className="text-lg font-bold text-gray-900 tracking-tight">Delivery Address</h3>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div className="md:col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">
                                         Street Address *
                                     </label>
                                     <input
@@ -241,11 +251,11 @@ function Register() {
                                         required
                                         value={formData.address.street}
                                         onChange={handleChange}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        className="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">
                                         City *
                                     </label>
                                     <input
@@ -254,11 +264,11 @@ function Register() {
                                         required
                                         value={formData.address.city}
                                         onChange={handleChange}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        className="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">
                                         Province *
                                     </label>
                                     <select
@@ -266,7 +276,7 @@ function Register() {
                                         required
                                         value={formData.address.province}
                                         onChange={handleChange}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        className="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium"
                                     >
                                         <option value="">Select Province</option>
                                         <option value="Western">Western</option>
@@ -281,7 +291,7 @@ function Register() {
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">
                                         Postal Code *
                                     </label>
                                     <input
@@ -290,7 +300,7 @@ function Register() {
                                         required
                                         value={formData.address.postalCode}
                                         onChange={handleChange}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        className="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium"
                                     />
                                 </div>
                             </div>
@@ -298,13 +308,14 @@ function Register() {
 
                         {/* Pharmacist Specific Fields */}
                         {role === 'PHARMACIST' && (
-                            <div className="border-t pt-6">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                                    Professional Information
-                                </h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="border-t border-gray-50 pt-10">
+                                <div className="flex items-center gap-2 mb-6">
+                                    <div className="w-8 h-8 bg-yellow-50 rounded-lg flex items-center justify-center text-yellow-600 font-black text-xs">3</div>
+                                    <h3 className="text-lg font-bold text-gray-900 tracking-tight">Professional Verification</h3>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">
                                             SLMC License Number *
                                         </label>
                                         <input
@@ -314,11 +325,11 @@ function Register() {
                                             value={formData.pharmacistData.licenseNumber}
                                             onChange={handleChange}
                                             placeholder="SLMC12345"
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            className="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-yellow-500 outline-none transition-all font-medium"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">
                                             NIC Number *
                                         </label>
                                         <input
@@ -328,11 +339,11 @@ function Register() {
                                             value={formData.pharmacistData.nic}
                                             onChange={handleChange}
                                             placeholder="123456789V"
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            className="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-yellow-500 outline-none transition-all font-medium"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">
                                             Qualifications
                                         </label>
                                         <input
@@ -341,11 +352,11 @@ function Register() {
                                             value={formData.pharmacistData.qualifications}
                                             onChange={handleChange}
                                             placeholder="B.Pharm, M.Pharm"
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            className="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-yellow-500 outline-none transition-all font-medium"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">
                                             Years of Experience
                                         </label>
                                         <input
@@ -354,50 +365,27 @@ function Register() {
                                             value={formData.pharmacistData.yearsOfExperience}
                                             onChange={handleChange}
                                             min="0"
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Pharmacy Branch
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="pharmacist.pharmacyBranch"
-                                            value={formData.pharmacistData.pharmacyBranch}
-                                            onChange={handleChange}
-                                            placeholder="Colombo Branch"
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Specialization
-                                        </label>
-                                        <input
-                                            type="text"
-                                            name="pharmacist.specialization"
-                                            value={formData.pharmacistData.specialization}
-                                            onChange={handleChange}
-                                            placeholder="Clinical Pharmacy"
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            className="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-yellow-500 outline-none transition-all font-medium"
                                         />
                                     </div>
                                 </div>
-                                <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                                    <p className="text-sm text-yellow-800">
-                                        ⚠️ <strong>Note:</strong> Your pharmacist account will be pending admin approval after registration.
+                                <div className="mt-6 p-5 bg-amber-50 border border-amber-100 rounded-2xl">
+                                    <p className="text-sm text-amber-800 font-medium leading-relaxed">
+                                        ⚠️ <strong>Verification Required:</strong> Your account will be manually reviewed by our medical board before you can access the pharmacist dashboard.
                                     </p>
                                 </div>
                             </div>
                         )}
 
                         {/* Password */}
-                        <div>
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Security</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="border-t border-gray-50 pt-10">
+                            <div className="flex items-center gap-2 mb-6">
+                                <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600 font-black text-xs">{role === 'PHARMACIST' ? '4' : '3'}</div>
+                                <h3 className="text-lg font-bold text-gray-900 tracking-tight">Security</h3>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">
                                         Password *
                                     </label>
                                     <input
@@ -407,11 +395,11 @@ function Register() {
                                         value={formData.password}
                                         onChange={handleChange}
                                         minLength="6"
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        className="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">
                                         Confirm Password *
                                     </label>
                                     <input
@@ -421,35 +409,41 @@ function Register() {
                                         value={formData.confirmPassword}
                                         onChange={handleChange}
                                         minLength="6"
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        className="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium"
                                     />
                                 </div>
                             </div>
                         </div>
 
                         {/* Submit Button */}
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                        >
-                            {loading ? 'Creating Account...' : 'Create Account'}
-                        </button>
+                        <div className="pt-4">
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className={`w-full py-5 rounded-2xl font-black text-sm uppercase tracking-widest transition-all shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${
+                                    role === 'PHARMACIST' 
+                                    ? 'bg-yellow-600 text-white hover:bg-yellow-700 shadow-yellow-100' 
+                                    : 'bg-green-600 text-white hover:bg-green-700 shadow-green-100'
+                                }`}
+                            >
+                                {loading ? 'Creating Account...' : 'Create Account'}
+                            </button>
+                        </div>
                     </form>
 
                     {/* Login Link */}
-                    <div className="mt-6 text-center">
-                        <p className="text-sm text-gray-600">
+                    <div className="mt-10 text-center border-t border-gray-50 pt-8">
+                        <p className="text-sm text-gray-500 font-medium">
                             Already have an account?{' '}
-                            <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
+                            <Link to="/login" className="font-black text-blue-600 hover:text-blue-700 underline decoration-2 underline-offset-4 decoration-blue-100 hover:decoration-blue-200 transition-all">
                                 Sign in here
                             </Link>
                         </p>
                     </div>
 
                     {/* Back to Home */}
-                    <div className="mt-4 text-center">
-                        <Link to="/" className="text-sm text-gray-500 hover:text-gray-700">
+                    <div className="mt-6 text-center">
+                        <Link to="/" className="text-xs text-gray-400 font-bold hover:text-gray-600 uppercase tracking-widest transition-all">
                             ← Back to Home
                         </Link>
                     </div>
