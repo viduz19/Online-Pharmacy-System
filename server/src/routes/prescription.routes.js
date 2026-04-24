@@ -6,6 +6,7 @@ import {
     getPrescription,
     reviewPrescription,
     getAllPrescriptions,
+    confirmPrescription,
 } from '../controllers/prescription.controller.js';
 import { protect, authorize } from '../middleware/auth.middleware.js';
 import { uploadPrescription as upload, handleMulterError } from '../middleware/upload.middleware.js';
@@ -15,6 +16,7 @@ const router = express.Router();
 // Customer routes
 router.post('/', protect, authorize('CUSTOMER'), upload.array('prescriptions', 5), handleMulterError, uploadPrescription);
 router.get('/my-prescriptions', protect, authorize('CUSTOMER'), getMyPrescriptions);
+router.patch('/:id/confirm', protect, authorize('CUSTOMER'), confirmPrescription);
 
 // Pharmacist routes
 router.get('/pending', protect, authorize('PHARMACIST'), getPendingPrescriptions);

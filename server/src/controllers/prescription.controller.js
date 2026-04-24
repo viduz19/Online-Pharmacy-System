@@ -342,3 +342,52 @@ export const getAllPrescriptions = async (req, res) => {
         errorResponse(res, error.message || 'Error retrieving prescriptions', 500);
     }
 };
+// @desc    Confirm approved prescription and proceed to payment
+// @route   PATCH /api/prescriptions/:id/confirm
+// @access  Private/Customer
+export const confirmPrescription = async (req, res) => {
+    try {
+        const prescription = await Prescription.findById(req.params.id).populate('order');
+
+        if (!prescription) {
+            return errorResponse(res, 'Prescription not found', 404);
+        }
+
+        if (prescription.customer.toString() !== req.user.id) {
+            return errorResponse(res, 'Not authorized to confirm this prescription', 403);
+        }
+
+        if (prescription.status !== 'APPROVED') {
+            return errorResponse(res, 'Only approved prescriptions can be confirmed', 400);
+        }
+
+        const order = await Order.findById(prescription.order._id);
+
+        if (!order) {
+            return errorResponse(res, 'Linked order not found', 404);
+        }
+
+        if (order.status !== 'APPROVED') {
+            return errorResponse(res, 'Order is not in approved status', 400);
+        }
+
+        // Update order status to AWAITING_PAYMENT
+        order.status = 'AWAITING_PAYMENT';
+        await order.save();
+
+        // Create audit log
+        await createAuditLog(
+            req.user.id,
+            'ORDER_CONFIRMED',
+            'Order',
+            order._id,
+            { orderNumber: order.orderNumber, type: 'prescription' },
+            req
+        );
+
+        successResponse(res, 'Prescription order confirmed. Please proceed to payment.', order);
+    } catch (error) {
+        console.error('Confirm prescription error:', error);
+        errorResponse(res, error.message || 'Error confirming prescription', 500);
+    }
+};

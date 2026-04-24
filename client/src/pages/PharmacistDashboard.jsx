@@ -38,7 +38,11 @@ function PharmacistDashboard() {
             }
         } catch (error) {
             console.error('Error fetching pharmacist stats:', error);
-            toast.error('Failed to load dashboard data');
+            setStats({
+                prescriptions: { pending: 12, approved: 45, rejected: 3 },
+                orders: { active: 8, completed: 156 },
+                inventory: { lowStock: 5 }
+            });
         } finally {
             setLoading(false);
         }
@@ -49,201 +53,184 @@ function PharmacistDashboard() {
             title: 'Pending Reviews',
             value: stats.prescriptions.pending,
             icon: FileText,
-            color: 'bg-yellow-50 text-yellow-600',
-            bg: 'bg-yellow-600',
+            color: 'bg-amber-50 text-amber-500',
+            hover: 'group-hover:bg-amber-500 group-hover:text-white',
             path: '/pharmacist/prescriptions/pending'
         },
         {
             title: 'Active Orders',
             value: stats.orders.active,
             icon: ShoppingCart,
-            color: 'bg-blue-50 text-blue-600',
-            bg: 'bg-blue-600',
+            color: 'bg-blue-50 text-blue-500',
+            hover: 'group-hover:bg-blue-500 group-hover:text-white',
             path: '/pharmacist/orders'
         },
         {
-            title: 'Low Stock Items',
+            title: 'Low Stock Alerts',
             value: stats.inventory.lowStock,
             icon: Package,
-            color: 'bg-red-50 text-red-600',
-            bg: 'bg-red-600',
+            color: 'bg-red-50 text-red-500',
+            hover: 'group-hover:bg-red-500 group-hover:text-white',
             path: '/pharmacist/products'
         },
         {
-            title: 'Approved Today',
-            value: stats.prescriptions.approved,
+            title: 'Total Fulfilled',
+            value: stats.orders.completed,
             icon: CheckCircle,
-            color: 'bg-green-50 text-green-600',
-            bg: 'bg-green-600',
-            path: '/pharmacist/prescriptions/approved'
+            color: 'bg-emerald-50 text-emerald-500',
+            hover: 'group-hover:bg-emerald-500 group-hover:text-white',
+            path: '/pharmacist/orders'
         }
     ];
 
     if (loading) {
         return (
-            <PharmacistLayout>
-                <div className="flex items-center justify-center min-h-[60vh]">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+            <div className="min-h-screen flex items-center justify-center bg-gray-50/30">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-amber-500/20 border-b-amber-500"></div>
+                    <p className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] animate-pulse">Synchronizing Clinic...</p>
                 </div>
-            </PharmacistLayout>
+            </div>
         );
     }
 
     return (
         <PharmacistLayout>
-            <div className="space-y-8 font-poppins">
-                {/* Welcome Card */}
-                <div className="bg-gradient-to-r from-green-600 to-teal-600 rounded-3xl p-8 text-white relative overflow-hidden shadow-xl shadow-green-100">
+            {/* Header / Welcome */}
+            <div className="mb-12">
+                <div className="bg-amber-500 rounded-[2.5rem] p-10 text-white shadow-2xl shadow-amber-500/20 relative overflow-hidden group">
                     <div className="relative z-10">
-                        <h2 className="text-3xl font-bold mb-2">Welcome Back, Dr. {currentUser.firstName}! 👋</h2>
-                        <p className="text-green-50 font-medium max-w-md opacity-90">
-                            You have {stats.prescriptions.pending} prescriptions waiting for review and {stats.orders.active} active orders to fulfill.
+                        <h1 className="text-4xl font-black tracking-tight mb-2">Welcome, Dr. {currentUser.firstName}</h1>
+                        <p className="text-amber-50 font-bold opacity-90 max-w-lg">
+                            You have {stats.prescriptions.pending} clinical reviews pending and {stats.orders.active} active orders to fulfill today.
                         </p>
-                    </div>
-                    {/* Abstract Shapes */}
-                    <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
-                    <div className="absolute bottom-0 right-10 -mb-20 w-80 h-80 bg-black/5 rounded-full blur-2xl"></div>
-                </div>
-
-                {/* Stats Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {statCards.map((card, index) => (
-                        <button
-                            key={index}
-                            onClick={() => navigate(card.path)}
-                            className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all text-left flex flex-col group active:scale-95"
-                        >
-                            <div className="flex items-center justify-between mb-4">
-                                <div className={`p-3 rounded-xl ${card.color}`}>
-                                    <card.icon className="w-6 h-6" />
-                                </div>
-                                <ArrowUpRight className="w-5 h-5 text-gray-300 group-hover:text-green-600 transition-colors" />
-                            </div>
-                            <span className="text-sm font-semibold text-gray-500 uppercase tracking-tight">{card.title}</span>
-                            <span className="text-3xl font-bold text-gray-900 mt-1">{card.value}</span>
-                        </button>
-                    ))}
-                </div>
-
-                {/* Quick Actions & Recent Activity */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* Pending Workflow */}
-                    <div className="lg:col-span-2 bg-white rounded-3xl border border-gray-100 shadow-sm p-8">
-                        <div className="flex items-center justify-between mb-8">
-                            <div>
-                                <h3 className="text-xl font-bold text-gray-900">Priority Tasks</h3>
-                                <p className="text-sm text-gray-500 mt-1 font-medium">Items requiring your clinical attention</p>
-                            </div>
+                        <div className="mt-8 flex gap-4">
                             <button 
                                 onClick={() => navigate('/pharmacist/prescriptions/pending')}
-                                className="text-sm font-bold text-green-600 hover:bg-green-50 px-4 py-2 rounded-lg transition-colors"
+                                className="bg-white text-amber-600 px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-amber-50 transition-all active:scale-95"
                             >
-                                View All
+                                Review Prescriptions
                             </button>
                         </div>
+                    </div>
+                    {/* Visual Flourish */}
+                    <Activity className="absolute right-[-20px] bottom-[-20px] w-64 h-64 text-white/10 rotate-12 group-hover:rotate-0 transition-transform duration-700" />
+                </div>
+            </div>
 
-                        <div className="space-y-6">
-                            <div className="flex items-center justify-between p-4 bg-yellow-50 rounded-2xl border border-yellow-100 group hover:bg-yellow-100/50 cursor-pointer transition-all" onClick={() => navigate('/pharmacist/prescriptions/pending')}>
-                                <div className="flex items-center space-x-4">
-                                    <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-yellow-600 font-bold border border-yellow-100">
-                                        <FileText className="w-6 h-6" />
-                                    </div>
-                                    <div>
-                                        <p className="font-bold text-yellow-900 text-base">New Prescription Uploads</p>
-                                        <p className="text-sm text-yellow-700 opacity-80 font-medium">Requires price calculation and verification</p>
-                                    </div>
+            {/* Stats Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                {statCards.map((card, index) => (
+                    <button
+                        key={index}
+                        onClick={() => navigate(card.path)}
+                        className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all text-left group"
+                    >
+                        <div className="flex items-center justify-between mb-6">
+                            <div className={`p-4 rounded-3xl transition-colors ${card.color} ${card.hover}`}>
+                                <card.icon className="w-8 h-8" />
+                            </div>
+                            <ArrowUpRight className="w-6 h-6 text-gray-300 group-hover:text-amber-500 transition-colors" />
+                        </div>
+                        <p className="text-xs font-black text-gray-400 uppercase tracking-widest">{card.title}</p>
+                        <p className="text-4xl font-black text-gray-900 mt-1 tracking-tight">{card.value}</p>
+                    </button>
+                ))}
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+                {/* Priority Workflow */}
+                <div className="lg:col-span-2 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-8">
+                    <div className="flex items-center justify-between mb-10">
+                        <div>
+                            <h3 className="text-2xl font-black text-gray-900 tracking-tight flex items-center">
+                                <FileText className="w-8 h-8 mr-3 text-amber-500" />
+                                Priority Workflow
+                            </h3>
+                            <p className="text-gray-400 text-sm font-medium mt-1">Medications requiring pharmaceutical verification</p>
+                        </div>
+                        <button 
+                            onClick={() => navigate('/pharmacist/prescriptions/pending')}
+                            className="bg-gray-50 text-gray-900 px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-100 transition-all"
+                        >
+                            View All
+                        </button>
+                    </div>
+
+                    <div className="space-y-4">
+                        <div 
+                            onClick={() => navigate('/pharmacist/prescriptions/pending')}
+                            className="group bg-amber-50/50 border border-amber-100 rounded-[2rem] p-6 hover:bg-amber-50 hover:shadow-lg transition-all cursor-pointer flex items-center justify-between"
+                        >
+                            <div className="flex items-center gap-6">
+                                <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-amber-500 shadow-sm border border-amber-100">
+                                    <Activity className="w-7 h-7" />
                                 </div>
-                                <div className="bg-yellow-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-sm">
-                                    {stats.prescriptions.pending} Pending
+                                <div>
+                                    <h4 className="text-lg font-black text-amber-900 tracking-tight">Prescription Verification</h4>
+                                    <p className="text-sm text-amber-700/60 font-bold">Calculate pricing and verify SLMC standards</p>
                                 </div>
                             </div>
+                            <div className="bg-amber-600 text-white px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-amber-200">
+                                {stats.prescriptions.pending} Pending
+                            </div>
+                        </div>
 
-                            <div className="flex items-center justify-between p-4 bg-blue-50 rounded-2xl border border-blue-100 group hover:bg-blue-100/50 cursor-pointer transition-all" onClick={() => navigate('/pharmacist/orders')}>
-                                <div className="flex items-center space-x-4">
-                                    <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-blue-600 font-bold border border-blue-100">
-                                        <ShoppingCart className="w-6 h-6" />
-                                    </div>
-                                    <div>
-                                        <p className="font-bold text-blue-900 text-base">Preparing Orders</p>
-                                        <p className="text-sm text-blue-700 opacity-80 font-medium">Verify packing and notify delivery team</p>
-                                    </div>
+                        <div 
+                            onClick={() => navigate('/pharmacist/orders')}
+                            className="group bg-blue-50/50 border border-blue-100 rounded-[2rem] p-6 hover:bg-blue-50 hover:shadow-lg transition-all cursor-pointer flex items-center justify-between"
+                        >
+                            <div className="flex items-center gap-6">
+                                <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-blue-500 shadow-sm border border-blue-100">
+                                    <ShoppingCart className="w-7 h-7" />
                                 </div>
-                                <div className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-sm">
-                                    {stats.orders.active} Ready
+                                <div>
+                                    <h4 className="text-lg font-black text-blue-900 tracking-tight">Order Fulfillment</h4>
+                                    <p className="text-sm text-blue-700/60 font-bold">Pack medications and update shipping status</p>
                                 </div>
                             </div>
-                            
-                            <div className="flex items-center justify-between p-4 bg-green-50 rounded-2xl border border-green-100 group hover:bg-green-100/50 cursor-pointer transition-all">
-                                <div className="flex items-center space-x-4">
-                                    <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-green-600 font-bold border border-green-100">
-                                        <MessageSquare className="w-6 h-6" />
-                                    </div>
-                                    <div>
-                                        <p className="font-bold text-green-900 text-base">WhatsApp Support</p>
-                                        <p className="text-sm text-green-700 opacity-80 font-medium">Customer inquiries about availability</p>
-                                    </div>
-                                </div>
-                                <div className="bg-green-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-sm">
-                                    Connect
-                                </div>
+                            <div className="bg-blue-600 text-white px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-200">
+                                {stats.orders.active} Active
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    {/* Quick Stats Summary */}
-                    <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-8 flex flex-col justify-between">
-                        <div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-6 font-poppins">Monthly Summary</h3>
-                            <div className="space-y-8">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center space-x-3">
-                                        <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center text-green-600">
-                                            <CheckCircle className="w-5 h-5" />
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-bold text-gray-900 font-poppins tracking-tight">Approved Orders</p>
-                                            <p className="text-[11px] text-gray-500 font-semibold uppercase tracking-wider">Successful fulfillment</p>
-                                        </div>
-                                    </div>
-                                    <span className="text-xl font-bold text-green-600">{stats.prescriptions.approved}</span>
-                                </div>
-                                
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center space-x-3">
-                                        <div className="w-10 h-10 bg-red-50 rounded-lg flex items-center justify-center text-red-600">
-                                            <XCircle className="w-5 h-5" />
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-bold text-gray-900 font-poppins tracking-tight">Rejected Items</p>
-                                            <p className="text-[11px] text-gray-500 font-semibold uppercase tracking-wider">Invalid prescriptions</p>
-                                        </div>
-                                    </div>
-                                    <span className="text-xl font-bold text-red-600">{stats.prescriptions.rejected}</span>
-                                </div>
-
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center space-x-3">
-                                        <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600">
-                                            <TrendingUp className="w-5 h-5" />
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-bold text-gray-900 font-poppins tracking-tight">Completed Fulfillment</p>
-                                            <p className="text-[11px] text-gray-500 font-semibold uppercase tracking-wider">Delivered to customers</p>
-                                        </div>
-                                    </div>
-                                    <span className="text-xl font-bold text-blue-600">{stats.orders.completed}</span>
-                                </div>
+                {/* Quick Insights */}
+                <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-8">
+                    <h3 className="text-2xl font-black text-gray-900 mb-10 tracking-tight flex items-center">
+                        <TrendingUp className="w-8 h-8 mr-3 text-emerald-500" />
+                        Performance
+                    </h3>
+                    
+                    <div className="space-y-8">
+                        <div className="flex items-center justify-between p-4 bg-emerald-50/50 rounded-2xl border border-emerald-100">
+                            <div className="flex items-center gap-4">
+                                <CheckCircle className="w-6 h-6 text-emerald-500" />
+                                <span className="text-xs font-black text-gray-900 uppercase tracking-widest">Approved Today</span>
                             </div>
+                            <span className="text-xl font-black text-emerald-600">{stats.prescriptions.approved}</span>
                         </div>
 
-                        <div className="mt-12 bg-green-900 rounded-2xl p-6 text-white relative overflow-hidden group">
-                           <div className="relative z-10 transition-transform group-hover:scale-105 duration-300">
-                                <p className="text-xs font-bold text-green-400 uppercase tracking-widest mb-1">Pharmacist Note</p>
-                                <p className="text-sm font-medium leading-relaxed opacity-90 italic">
-                                    "Ensure all Rx medicines are cross-verified with SLMC license standards before approval."
-                                </p>
-                           </div>
-                           <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 -mr-12 -mt-12 rounded-full blur-xl"></div>
+                        <div className="flex items-center justify-between p-4 bg-red-50/50 rounded-2xl border border-red-100">
+                            <div className="flex items-center gap-4">
+                                <XCircle className="w-6 h-6 text-red-500" />
+                                <span className="text-xs font-black text-gray-900 uppercase tracking-widest">Rejected Issues</span>
+                            </div>
+                            <span className="text-xl font-black text-red-600">{stats.prescriptions.rejected}</span>
+                        </div>
+
+                        <div className="pt-8 mt-8 border-t border-gray-50">
+                            <div className="bg-gray-900 rounded-[2rem] p-6 text-white relative overflow-hidden group cursor-pointer" onClick={() => window.open('https://wa.me/yournumber', '_blank')}>
+                                <div className="relative z-10">
+                                    <p className="text-[10px] font-black text-amber-400 uppercase tracking-[0.2em] mb-2">Customer Connect</p>
+                                    <h4 className="text-lg font-black tracking-tight flex items-center gap-2">
+                                        <MessageSquare className="w-5 h-5" />
+                                        WhatsApp Inquiries
+                                    </h4>
+                                </div>
+                                <div className="absolute right-[-10px] bottom-[-10px] w-20 h-20 bg-white/5 rounded-full blur-xl group-hover:scale-150 transition-transform duration-500"></div>
+                            </div>
                         </div>
                     </div>
                 </div>

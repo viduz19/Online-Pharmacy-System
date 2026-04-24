@@ -17,6 +17,13 @@ import PharmacistOrders from '../pages/PharmacistOrders';
 import PharmacistProducts from '../pages/PharmacistProducts';
 import Cart from '../pages/Cart';
 import Checkout from '../pages/Checkout';
+import CustomerOrders from '../pages/CustomerOrders';
+import OrderDetails from '../pages/OrderDetails';
+import CustomerPrescriptions from '../pages/CustomerPrescriptions';
+import PrescriptionDetails from '../pages/PrescriptionDetails';
+import CustomerProfile from '../pages/CustomerProfile';
+import CustomerSettings from '../pages/CustomerSettings';
+import About from '../pages/About';
 
 const NotFound = () => (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -32,6 +39,7 @@ function AppRoutes() {
     return (
         <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/products" element={<Products />} />
@@ -41,6 +49,12 @@ function AppRoutes() {
             {/* Customer Routes */}
             <Route path="/customer/dashboard" element={<CustomerDashboard />} />
             <Route path="/customer/upload-prescription" element={<UploadPrescription />} />
+            <Route path="/customer/orders" element={<CustomerOrders />} />
+            <Route path="/customer/orders/:orderId" element={<OrderDetails />} />
+            <Route path="/customer/prescriptions" element={<CustomerPrescriptions />} />
+            <Route path="/customer/prescriptions/:id" element={<PrescriptionDetails />} />
+            <Route path="/customer/profile" element={<CustomerProfile />} />
+            <Route path="/customer/settings" element={<CustomerSettings />} />
 
             {/* Pharmacist Routes */}
             <Route path="/pharmacist/dashboard" element={<PharmacistDashboard />} />
