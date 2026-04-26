@@ -512,9 +512,9 @@ export const getCategories = async (req, res) => {
 };
 
 // @desc    Get detailed sales report
-// @route   GET /api/admin/reports/sales
+// @route   GET /api/admin/reports/sales/detailed
 // @access  Private/Admin
-export const getSalesReport = async (req, res) => {
+export const getDetailedSalesReport = async (req, res) => {
     try {
         const { startDate, endDate } = req.query;
         
