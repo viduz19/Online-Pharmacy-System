@@ -63,7 +63,7 @@ function PrescriptionDetails() {
     };
 
     const handleWhatsAppSupport = () => {
-        const phoneNumber = '+94771234567'; // Placeholder
+        const phoneNumber = '+94774708984'; // Pharmacy number
         const message = `Hello, I'm inquiring about my prescription request ID: ${id}. Current status is ${prescription?.status}.`;
         const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
         window.open(url, '_blank');

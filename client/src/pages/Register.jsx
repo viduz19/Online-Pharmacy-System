@@ -227,7 +227,7 @@ function Register() {
                                         required
                                         value={formData.phone}
                                         onChange={handleChange}
-                                        placeholder="+94771234567"
+                                        placeholder="+94774708984"
                                         className="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium"
                                     />
                                 </div>

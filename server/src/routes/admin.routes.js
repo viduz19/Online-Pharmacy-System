@@ -39,4 +39,10 @@ router.get('/reports/sales', getSalesReport);
 // Audit logs
 router.get('/audit-logs', getAuditLogsController);
 
+// Category management
+router.get('/categories', getCategories);
+router.post('/categories', createCategory);
+router.put('/categories/:id', updateCategory);
+router.delete('/categories/:id', deleteCategory);
+
 export default router;

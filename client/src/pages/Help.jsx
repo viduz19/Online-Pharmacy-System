@@ -18,7 +18,7 @@ function Help() {
                     <h3 className="text-2xl font-bold text-gray-900 mb-3">WhatsApp Support</h3>
                     <p className="text-gray-600 mb-8">Chat directly with our lead pharmacist for consultations, medicine availability, or order help.</p>
                     <WhatsAppButton 
-                        phone="94771234567" // Placeholder pharmacy number
+                        phone="94774708984" // Pharmacy number
                         message="Hello Viduz Pharmacy, I need some assistance with my medical order."
                         label="Start Chat Now"
                     />
