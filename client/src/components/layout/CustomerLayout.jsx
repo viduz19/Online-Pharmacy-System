@@ -18,6 +18,8 @@ import { authService } from '../../services/api.service';
 import { useCart } from '../../context/CartContext';
 import toast from 'react-hot-toast';
 import logo from "../../assets/Online Pharmacy System.png";
+import NotificationDropdown from '../NotificationDropdown';
+
 
 const sidebarItems = [
     { name: 'Dashboard', path: '/customer/dashboard', icon: LayoutDashboard },
@@ -147,10 +149,7 @@ function CustomerLayout({ children }) {
                     </div>
 
                     <div className="flex items-center space-x-6">
-                        <button className="relative text-gray-500 hover:text-green-600 transition-colors p-2 rounded-lg hover:bg-gray-50">
-                            <Bell className="w-6 h-6" />
-                            <span className="absolute top-2 right-2 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full border-2 border-white font-bold">2</span>
-                        </button>
+                        <NotificationDropdown role="CUSTOMER" color="green" />
                         
                         <div className="flex items-center space-x-3 border-l pl-6 border-gray-200">
                             <div className="text-right hidden sm:block">

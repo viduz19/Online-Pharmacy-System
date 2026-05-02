@@ -2,13 +2,15 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import AppRoutes from './routes/AppRoutes';
 import { CartProvider } from './context/CartContext';
+import { NotificationProvider } from './context/NotificationContext';
 
 function App() {
     return (
         <Router>
             <CartProvider>
-                <div className="min-h-screen bg-gray-50">
-                    <AppRoutes />
+                <NotificationProvider>
+                    <div className="min-h-screen bg-gray-50">
+                        <AppRoutes />
                     <Toaster
                         position="top-right"
                         toastOptions={{
@@ -34,6 +36,7 @@ function App() {
                         }}
                     />
                 </div>
+                </NotificationProvider>
             </CartProvider>
         </Router>
     );

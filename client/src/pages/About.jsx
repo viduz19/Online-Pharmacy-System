@@ -44,8 +44,11 @@ function About() {
                         <h1 className="text-5xl lg:text-7xl font-black text-gray-900 tracking-tight mb-8">
                             Modernizing Healthcare in <span className="text-blue-600">Sri Lanka</span>
                         </h1>
+                        <p className="text-xl text-gray-900 font-medium leading-relaxed">
+                            Viduz Pharmacy System
+                        </p>
                         <p className="text-xl text-gray-500 font-medium leading-relaxed">
-                            Viduz Pharmacy is a modern online pharmacy system designed to make healthcare more accessible, convenient, and reliable for customers across the island.
+                            A full-stack online pharmacy management system built for Viduz Pharmacy, located at No 143, High Level Road, Nugegoda, Sri Lanka. The system enables customers to purchase OTC medicines, upload prescriptions, and track orders — all reviewed by certified pharmacists.
                         </p>
                     </div>
                 </div>
