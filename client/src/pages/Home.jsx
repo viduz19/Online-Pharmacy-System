@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { ShoppingBag, Pill, Users, Shield, User, LogOut, ShoppingCart, ArrowRight, Play } from 'lucide-react';
 import { authService } from '../services/api.service';
@@ -7,12 +7,13 @@ import heroImage from '../assets/Hero image.png';
 import logo from '../assets/Online Pharmacy System.png';
 
 function Home() {
+    const navigate = useNavigate();
     const user = authService.getCurrentUser();
     const { getCartCount } = useCart();
 
     const handleLogout = () => {
         authService.logout();
-        window.location.reload();
+        navigate('/');
         toast.success('Logged out successfully');
     };
 
@@ -232,7 +233,6 @@ function Home() {
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
                         <div className="col-span-1 md:col-span-2 space-y-6">
                             <div className="flex items-center gap-3">
-                                <img src={logo} alt="Logo" className="w-12 h-12 object-contain brightness-0 invert" />
                                 <span className="text-2xl font-black tracking-tight">Viduz Pharmacy</span>
                             </div>
                             <p className="text-gray-400 font-medium max-w-sm leading-relaxed">
@@ -245,16 +245,20 @@ function Home() {
                             <h4 className="text-sm font-black uppercase tracking-widest mb-6 text-gray-500">Quick Links</h4>
                             <ul className="space-y-4 font-bold text-sm text-gray-300">
                                 <li><Link to="/products" className="hover:text-blue-400 transition-colors">All Products</Link></li>
-                                <li><Link to="/customer/upload-prescription" className="hover:text-blue-400 transition-colors">Upload Rx</Link></li>
-                                <li><Link to="/contact" className="hover:text-blue-400 transition-colors">Support</Link></li>
+                                <li><Link to="/login" className="hover:text-blue-400 transition-colors">Upload Rx</Link></li>
+                                <li><Link to="/about" className="hover:text-blue-400 transition-colors">About</Link></li>
                             </ul>
                         </div>
 
                         <div>
                             <h4 className="text-sm font-black uppercase tracking-widest mb-6 text-gray-500">Contact</h4>
                             <ul className="space-y-4 font-bold text-sm text-gray-300">
+                                <li className="flex items-start gap-2">
+                                    <span className="text-blue-500">Addr:</span>
+                                    <span>No 143, High level road, Nugegoda</span>
+                                </li>
                                 <li className="flex items-center gap-2">support@viduzpharmacy.lk</li>
-                                <li className="flex items-center gap-2">+94 11 234 5678</li>
+                                <li className="flex items-center gap-2">+94 774708984</li>
                             </ul>
                         </div>
                     </div>

@@ -122,4 +122,4 @@
 
 **Last Updated:** April 2026
 
-**Developed by:** Viduz Pharmacy Development Team
+**Developed by:** Vidusha Puswalkatiya

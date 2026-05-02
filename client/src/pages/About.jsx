@@ -198,13 +198,63 @@ function About() {
                 </div>
             </div>
 
+            {/* Location Section */}
+            <div className="py-32 bg-gray-50/50">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="bg-white rounded-[3rem] shadow-xl shadow-gray-200/50 border border-gray-100 p-12 lg:p-20 flex flex-col lg:flex-row items-center gap-16">
+                        <div className="lg:w-1/2 space-y-8">
+                            <div>
+                                <span className="inline-block px-4 py-1 bg-blue-50 text-blue-600 rounded-full text-[10px] font-black uppercase tracking-widest mb-4">Our Presence</span>
+                                <h2 className="text-4xl font-black text-gray-900 tracking-tight">Visit Our Pharmacy</h2>
+                                <p className="text-gray-500 font-medium mt-4">We are located in the heart of Nugegoda, providing easy access for local pickups and consultation.</p>
+                            </div>
+                            
+                            <div className="space-y-6">
+                                <div className="flex items-start gap-6">
+                                    <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center shrink-0">
+                                        <Package className="w-6 h-6" />
+                                    </div>
+                                    <div>
+                                        <h4 className="text-sm font-black uppercase tracking-widest text-gray-400 mb-1">Physical Address</h4>
+                                        <p className="text-xl font-bold text-gray-900 leading-tight">No 143, High level road,<br />Nugegoda, Sri Lanka</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-6">
+                                    <div className="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center shrink-0">
+                                        <Clock className="w-6 h-6" />
+                                    </div>
+                                    <div>
+                                        <h4 className="text-sm font-black uppercase tracking-widest text-gray-400 mb-1">Operating Hours</h4>
+                                        <p className="text-lg font-bold text-gray-900">Mon - Sat: 8:00 AM - 10:00 PM</p>
+                                        <p className="text-gray-500 font-medium">Sunday: 9:00 AM - 5:00 PM</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="lg:w-1/2 w-full aspect-video bg-gray-100 rounded-[2rem] overflow-hidden relative group">
+                            {/* Placeholder for a map or pharmacy photo */}
+                            <div className="absolute inset-0 bg-blue-600 flex flex-col items-center justify-center text-white p-10 text-center">
+                                <div className="w-20 h-20 bg-white/10 rounded-3xl flex items-center justify-center mb-6 backdrop-blur-xl border border-white/20">
+                                    <Target className="w-10 h-10" />
+                                </div>
+                                <h3 className="text-2xl font-black tracking-tight mb-2">Central Location</h3>
+                                <p className="text-blue-100 font-medium">Conveniently located on the High Level Road for fast island-wide delivery dispatch.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {/* Footer / CTA */}
             <footer className="py-20 border-t border-gray-100">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                     <h3 className="text-2xl font-black text-gray-900 tracking-tight mb-6">Need Support?</h3>
-                    <p className="text-gray-500 font-medium mb-10 max-w-xl mx-auto">
-                        If you have any questions or need support, feel free to contact us through our platform. We are committed to protecting your privacy.
-                    </p>
+                    <div className="space-y-2 mb-10">
+                        <p className="text-gray-900 font-black tracking-tight">Viduz Pharmacy - Nugegoda</p>
+                        <p className="text-gray-500 font-medium max-w-xl mx-auto">
+                            No 143, High level road, Nugegoda.
+                        </p>
+                    </div>
                     <Link 
                         to="/login"
                         className="inline-flex items-center gap-3 bg-gray-900 text-white px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-gray-800 transition-all shadow-xl active:scale-95"

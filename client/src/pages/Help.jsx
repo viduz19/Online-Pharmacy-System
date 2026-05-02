@@ -58,6 +58,17 @@ function Help() {
                             <p className="text-sm font-bold text-gray-900">Sun: 9:00 AM - 5:00 PM</p>
                         </div>
                     </div>
+
+                    <div className="flex items-center space-x-4 p-4 bg-emerald-50 rounded-2xl border border-emerald-100 shadow-inner">
+                        <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center">
+                            <Package className="w-6 h-6 text-emerald-600" />
+                        </div>
+                        <div>
+                            <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">Physical Pharmacy</p>
+                            <p className="text-sm font-bold text-gray-900">No 143, High level road,</p>
+                            <p className="text-sm font-bold text-gray-900">Nugegoda, Sri Lanka</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

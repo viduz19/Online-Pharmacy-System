@@ -12,7 +12,8 @@ import {
     LogOut,
     Menu,
     X,
-    Bell
+    Bell,
+    User
 } from 'lucide-react';
 import { authService } from '../../services/api.service';
 import toast from 'react-hot-toast';
@@ -27,6 +28,7 @@ const sidebarItems = [
     { name: 'Pharmacists', path: '/admin/pharmacists', icon: UserCheck },
     { name: 'Revenue', path: '/admin/revenue', icon: TrendingUp },
     { name: 'Reports', path: '/admin/reports', icon: FileText },
+    { name: 'Profile', path: '/admin/profile', icon: User },
     { name: 'Settings', path: '/admin/settings', icon: Settings },
 ];
 
@@ -38,7 +40,7 @@ function AdminLayout({ children }) {
 
     const handleLogout = () => {
         authService.logout();
-        navigate('/login');
+        navigate('/');
         toast.success('Logged out successfully');
     };
 

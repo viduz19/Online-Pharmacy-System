@@ -100,7 +100,7 @@ function PharmacistDashboard() {
             <div className="mb-12">
                 <div className="bg-amber-500 rounded-[2.5rem] p-10 text-white shadow-2xl shadow-amber-500/20 relative overflow-hidden group">
                     <div className="relative z-10">
-                        <h1 className="text-4xl font-black tracking-tight mb-2">Welcome, Dr. {currentUser.firstName}</h1>
+                        <h1 className="text-4xl font-black tracking-tight mb-2">Welcome, {currentUser.firstName}</h1>
                         <p className="text-amber-50 font-bold opacity-90 max-w-lg">
                             You have {stats.prescriptions.pending} clinical reviews pending and {stats.orders.active} active orders to fulfill today.
                         </p>

@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 
 function CustomerProfile() {
     const user = authService.getCurrentUser() || {};
+    const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         firstName: user.firstName || '',
         lastName: user.lastName || '',
@@ -35,9 +36,19 @@ function CustomerProfile() {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        toast.success('Profile update feature coming soon!');
+        setLoading(true);
+        try {
+            const response = await authService.updateProfile(formData);
+            if (response.success) {
+                toast.success('Profile updated successfully');
+            }
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Failed to update profile');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -188,10 +199,11 @@ function CustomerProfile() {
                                 <div className="pt-8 flex justify-end">
                                     <button 
                                         type="submit"
-                                        className="inline-flex items-center px-8 py-4 bg-blue-600 text-white font-black rounded-2xl hover:bg-blue-700 shadow-xl shadow-blue-100 transition-all space-x-2"
+                                        disabled={loading}
+                                        className="inline-flex items-center px-8 py-4 bg-blue-600 text-white font-black rounded-2xl hover:bg-blue-700 shadow-xl shadow-blue-100 transition-all space-x-2 disabled:opacity-50"
                                     >
                                         <Save className="w-5 h-5" />
-                                        <span>Save Changes</span>
+                                        <span>{loading ? 'Updating...' : 'Save Changes'}</span>
                                     </button>
                                 </div>
                             </div>

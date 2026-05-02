@@ -37,6 +37,21 @@ export const authService = {
     isAuthenticated: () => {
         return !!localStorage.getItem('token');
     },
+
+    // Update profile
+    updateProfile: async (userData) => {
+        const response = await api.put('/auth/profile', userData);
+        if (response.data.success) {
+            localStorage.setItem('user', JSON.stringify(response.data.data));
+        }
+        return response.data;
+    },
+
+    // Change password
+    changePassword: async (passwordData) => {
+        const response = await api.put('/auth/change-password', passwordData);
+        return response.data;
+    },
 };
 
 export const productService = {
@@ -171,7 +186,7 @@ export const adminService = {
 
     // Category management
     getCategories: async () => {
-        const response = await api.get('/admin/categories');
+        const response = await api.get('/categories');
         return response.data;
     },
 
