@@ -110,7 +110,7 @@ function Register() {
                     // Clear the session since they are pending approval
                     authService.logout();
                     toast.success('Registration successful! Your account is pending admin approval.');
-                    navigate('/login');
+                    navigate('/');
                 } else {
                     toast.success('Registration successful! Welcome to Viduz Pharmacy!');
                     navigate('/products');

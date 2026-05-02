@@ -142,21 +142,6 @@
 
 ---
 
-## 📊 Dashboard Features Comparison
-
-| Feature | Admin | Customer | Pharmacist |
-|---------|-------|----------|------------|
-| Statistics | ✅ | ❌ | ✅ |
-| Pending Approvals | ✅ | ❌ | ❌ |
-| Orders View | ✅ | ✅ | ✅ |
-| Prescription Upload | ❌ | ✅ | ❌ |
-| Prescription Review | ❌ | ❌ | ✅ |
-| Price Setting | ❌ | ❌ | ✅ |
-| Profile Settings | ❌ | ✅ | ❌ |
-| Product Management | ✅ | ❌ | ❌ |
-
----
-
 ## 🎨 UI/UX Features
 
 ### **Common Features:**

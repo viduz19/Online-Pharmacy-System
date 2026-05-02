@@ -121,10 +121,10 @@ function Login() {
                         <p className="text-[10px] font-black text-blue-900 uppercase tracking-widest mb-3">Demo Credentials:</p>
                         <div className="space-y-2">
                             <p className="text-xs text-blue-700 font-medium">
-                                <span className="opacity-60">Admin:</span> admin@viduzpharmacy.lk
+                                <span className="opacity-60">Admin Account Email:</span> admin@viduzpharmacy.lk
                             </p>
                             <p className="text-xs text-blue-700 font-medium">
-                                <span className="opacity-60">Customer:</span> kasun.perera@gmail.com
+                                <span className="opacity-60">Password:</span> admin123
                             </p>
                         </div>
                     </div>

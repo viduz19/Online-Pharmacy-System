@@ -25,7 +25,7 @@ function Sidebar({ role }) {
 
     const handleLogout = () => {
         authService.logout();
-        navigate('/login');
+        navigate('/');
         toast.success('Logged out successfully');
     };
 

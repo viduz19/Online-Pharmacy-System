@@ -1,8 +1,20 @@
+import { useState } from 'react';
 import CustomerLayout from '../components/layout/CustomerLayout';
 import { Settings, Bell, Shield, Moon, Globe, HelpCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
+import ChangePasswordModal from '../components/ChangePasswordModal';
 
 function CustomerSettings() {
+    const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+
+    const handleItemClick = (item) => {
+        if (item === 'Change Password') {
+            setIsPasswordModalOpen(true);
+        } else {
+            toast.info(`${item} settings coming soon!`);
+        }
+    };
+
     const sections = [
         {
             title: 'Notifications',
@@ -48,7 +60,7 @@ function CustomerSettings() {
                                 {section.items.map((item, i) => (
                                     <button 
                                         key={i} 
-                                        onClick={() => toast.info(`${item} settings coming soon!`)}
+                                        onClick={() => handleItemClick(item)}
                                         className="w-full px-8 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors text-left"
                                     >
                                         <span className="text-sm font-medium text-gray-700">{item}</span>
@@ -77,6 +89,7 @@ function CustomerSettings() {
                     </div>
                 </div>
             </div>
+            <ChangePasswordModal isOpen={isPasswordModalOpen} onClose={() => setIsPasswordModalOpen(false)} />
         </CustomerLayout>
     );
 }

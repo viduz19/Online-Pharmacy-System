@@ -9,6 +9,7 @@ import PharmacistDashboard from '../pages/PharmacistDashboard';
 import AdminDashboard from '../pages/AdminDashboard';
 import AdminProducts from '../pages/AdminProducts';
 import AdminUsers from '../pages/AdminUsers';
+import AdminPharmacists from '../pages/AdminPharmacists';
 import AdminOrders from '../pages/AdminOrders';
 import AdminReports from '../pages/AdminReports';
 import AdminPrescriptions from '../pages/AdminPrescriptions';
@@ -24,6 +25,10 @@ import PrescriptionDetails from '../pages/PrescriptionDetails';
 import CustomerProfile from '../pages/CustomerProfile';
 import CustomerSettings from '../pages/CustomerSettings';
 import About from '../pages/About';
+import AdminProfile from '../pages/AdminProfile';
+import AdminSettings from '../pages/AdminSettings';
+import PharmacistProfile from '../pages/PharmacistProfile';
+import PharmacistSettings from '../pages/PharmacistSettings';
 
 const NotFound = () => (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -63,15 +68,20 @@ function AppRoutes() {
             <Route path="/pharmacist/prescriptions/rejected" element={<PharmacistPrescriptions />} />
             <Route path="/pharmacist/orders" element={<PharmacistOrders />} />
             <Route path="/pharmacist/products" element={<PharmacistProducts />} />
+            <Route path="/pharmacist/profile" element={<PharmacistProfile />} />
+            <Route path="/pharmacist/settings" element={<PharmacistSettings />} />
 
             {/* Admin Routes */}
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/products" element={<AdminProducts />} />
             <Route path="/admin/users" element={<AdminUsers />} />
+            <Route path="/admin/pharmacists" element={<AdminPharmacists />} />
             <Route path="/admin/orders" element={<AdminOrders />} />
             <Route path="/admin/prescriptions" element={<AdminPrescriptions />} />
             <Route path="/admin/revenue" element={<AdminReports />} />
             <Route path="/admin/reports" element={<AdminReports />} />
+            <Route path="/admin/profile" element={<AdminProfile />} />
+            <Route path="/admin/settings" element={<AdminSettings />} />
 
             {/* 404 */}
             <Route path="*" element={<NotFound />} />

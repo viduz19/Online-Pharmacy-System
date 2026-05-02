@@ -284,66 +284,90 @@ function PharmacistPrescriptions() {
                     <div className="bg-white rounded-3xl w-full max-w-5xl max-h-[95vh] overflow-hidden shadow-2xl flex flex-col md:flex-row font-poppins">
                         
                         {/* Left Side: Prescription Files */}
-                        <div className="md:w-1/3 bg-gray-900 p-8 flex flex-col border-r border-gray-800">
-                            <div className="flex items-center justify-between mb-8">
-                                <span className="text-green-500 font-bold tracking-widest text-xs uppercase">Prescription Analysis</span>
-                                <button onClick={() => setSelectedPrescription(null)} className="p-2 hover:bg-white/10 rounded-full transition-all md:hidden">
-                                    <XCircle className="w-6 h-6 text-gray-400" />
-                                </button>
-                            </div>
-                            
-                            <div className="flex-1 overflow-y-auto space-y-6 pr-2 scrollbar-hide">
-                                {selectedPrescription.files.map((file, idx) => (
-                                    <div key={idx} className="group relative rounded-2xl overflow-hidden bg-white/5 border border-white/10 hover:border-white/30 transition-all cursor-zoom-in">
-                                        <img 
-                                            src={`http://localhost:5000/uploads/prescriptions/${file.filename}`}
-                                            alt="Prescription"
-                                            className="w-full h-auto object-cover opacity-80 group-hover:opacity-100 transition-opacity"
-                                        />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-4">
-                                            <a 
-                                                href={`http://localhost:5000/uploads/prescriptions/${file.filename}`}
-                                                target="_blank"
-                                                className="bg-white/20 backdrop-blur-md text-white text-[10px] px-3 py-1.5 rounded-lg border border-white/20 flex items-center font-bold uppercase tracking-wider hover:bg-white/30 transition-all"
-                                            >
-                                                <Eye className="w-3.5 h-3.5 mr-1.5" /> Full Vision
-                                            </a>
-                                        </div>
-                                    </div>
-                                ))}
-                                
-                                {selectedPrescription.customerNotes && (
-                                    <div className="bg-blue-900/40 p-5 rounded-2xl border border-blue-800 shadow-xl">
-                                        <div className="flex items-center text-blue-400 mb-2">
-                                            <AlertCircle className="w-4 h-4 mr-2" />
-                                            <span className="text-[10px] font-bold uppercase tracking-widest">Customer Note</span>
-                                        </div>
-                                        <p className="text-sm text-blue-100 italic opacity-90 leading-relaxed font-poppins tracking-tight">
-                                            "{selectedPrescription.customerNotes}"
-                                        </p>
-                                    </div>
-                                )}
-                            </div>
+                       <div className="md:w-1/3 bg-gray-900 p-6 md:p-8 flex flex-col border-r border-gray-800">
+  <div className="flex items-center justify-between mb-6">
+    <span className="text-green-500 font-bold tracking-widest text-xs uppercase">
+      Prescription Analysis
+    </span>
 
-                            <div className="mt-8 pt-8 border-t border-white/5">
-                                <div className="flex items-center space-x-3 mb-6">
-                                    <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center text-gray-900 font-bold">
-                                        {selectedPrescription.customer.firstName.charAt(0)}
-                                    </div>
-                                    <div>
-                                        <p className="text-white font-bold text-sm tracking-tight">{selectedPrescription.customer.firstName} {selectedPrescription.customer.lastName}</p>
-                                        <p className="text-gray-500 text-[11px] font-semibold">{selectedPrescription.customer.email}</p>
-                                    </div>
-                                </div>
-                                <button 
-                                    onClick={() => handleWhatsAppContact(selectedPrescription, 'general')}
-                                    className="w-full bg-[#25D366] text-white py-3 rounded-2xl font-bold flex items-center justify-center space-x-2 shadow-lg shadow-green-900/20 hover:scale-[1.02] active:scale-95 transition-all text-xs uppercase tracking-widest"
-                                >
-                                    <MessageSquare className="w-4 h-4 fill-white" />
-                                    <span>WhatsApp Direct</span>
-                                </button>
-                            </div>
-                        </div>
+    <button
+      onClick={() => setSelectedPrescription(null)}
+      className="p-2 hover:bg-white/10 rounded-full transition-all md:hidden"
+    >
+      <XCircle className="w-6 h-6 text-gray-400" />
+    </button>
+  </div>
+
+  <div className="flex-1 overflow-y-auto space-y-6 px-1 md:px-2 max-h-[65vh] scrollbar-hide">
+    {selectedPrescription.files.map((file, idx) => (
+      <div
+        key={idx}
+        className="group relative mx-auto w-full max-w-[360px] rounded-2xl overflow-hidden bg-white/10 border border-white/10 hover:border-white/30 transition-all shadow-lg"
+      >
+        <div className="w-full bg-white/5 flex items-center justify-center p-5">
+          <img
+            src={`http://localhost:5000/uploads/prescriptions/${file.filename}`}
+            alt="Prescription"
+            className="w-full max-h-[420px] object-contain rounded-xl opacity-90 group-hover:opacity-100 transition-opacity"
+          />
+        </div>
+
+       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-4">
+          <a
+            href={`http://localhost:5000/uploads/prescriptions/${file.filename}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-white/20 backdrop-blur-md text-white text-[10px] px-3 py-1.5 rounded-lg border border-white/20 flex items-center font-bold uppercase tracking-wider hover:bg-white/30 transition-all"
+          >
+            <Eye className="w-3.5 h-3.5 mr-1.5" />
+            View Full Prescription
+          </a>
+        </div>
+      </div>
+    ))}
+
+    {selectedPrescription.customerNotes && (
+      <div className="mx-auto w-full max-w-[360px] bg-blue-900/40 p-5 rounded-2xl border border-blue-800 shadow-xl">
+        <div className="flex items-center justify-center text-blue-400 mb-3">
+          <AlertCircle className="w-4 h-4 mr-2" />
+          <span className="text-[10px] font-bold uppercase tracking-widest">
+            Customer Note
+          </span>
+        </div>
+
+        <p className="text-sm text-blue-100 italic opacity-90 leading-relaxed font-poppins tracking-tight text-center">
+          "{selectedPrescription.customerNotes}"
+        </p>
+      </div>
+    )}
+  </div>
+
+  <div className="mt-6 pt-6 border-t border-white/5">
+    <div className="flex flex-col items-center text-center space-y-3 mb-6">
+      <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center text-gray-900 font-bold text-lg">
+        {selectedPrescription.customer.firstName.charAt(0)}
+      </div>
+
+      <div>
+        <p className="text-white font-bold text-sm tracking-tight">
+          {selectedPrescription.customer.firstName}{" "}
+          {selectedPrescription.customer.lastName}
+        </p>
+        <p className="text-gray-500 text-[11px] font-semibold break-all">
+          {selectedPrescription.customer.email}
+        </p>
+      </div>
+    </div>
+
+    <button
+      onClick={() => handleWhatsAppContact(selectedPrescription, "general")}
+      className="mx-auto w-full max-w-[360px] bg-[#25D366] text-white py-3 rounded-2xl font-bold flex items-center justify-center space-x-2 shadow-lg shadow-green-900/20 hover:scale-[1.02] active:scale-95 transition-all text-xs uppercase tracking-widest"
+    >
+      <MessageSquare className="w-4 h-4 fill-white" />
+      <span>WhatsApp Direct</span>
+    </button>
+  </div>
+</div>
 
                         {/* Right Side: Workflow & Fulfillment */}
                         <div className="flex-1 bg-white flex flex-col p-8 overflow-hidden relative">

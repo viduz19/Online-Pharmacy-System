@@ -6,9 +6,29 @@ This guide provides a comprehensive, step-by-step walkthrough for testing the Vi
 ---
 
 ## 📋 Prerequisites
-- **Backend Server:** `cd server && npm run dev` (Port 5000)
-- **Frontend Server:** `cd client && npm run dev` (Port 5173)
-- **Database:** Ensure MongoDB Atlas is connected.
+
+### ✅ Required Services
+| Service | Command | Port |
+|---|---|---|
+| **MongoDB (Local)** | Ensure MongoDB Community Server is running locally | 27017 |
+| **Backend Server** | `cd server && npm run dev` | 5000 |
+| **Frontend Server** | `cd client && npm run dev` | 5173 |
+
+### 🗄️ Database Setup (Local MongoDB)
+- **Database Engine:** MongoDB Community Server (Local)
+- **Connection String:** `mongodb://localhost:27017/Online-Pharmacy-System-1`
+- **No internet connection required** — database runs fully offline on your machine.
+
+#### Starting MongoDB Locally
+1. Open **Services** (`Win + R` → type `services.msc`) and ensure **MongoDB** service is **Running**.
+   - Or start it via terminal: `net start MongoDB`
+2. Optionally verify with **MongoDB Compass** by connecting to `mongodb://localhost:27017`.
+
+### 🔑 Default Admin Credentials
+| Field | Value |
+|---|---|
+| **Email** | `admin@viduzpharmacy.lk` |
+| **Password** | `Admin@123` |
 
 ---
 
@@ -32,11 +52,11 @@ This guide provides a comprehensive, step-by-step walkthrough for testing the Vi
 1. From the dashboard, click **Browse Products**.
 2. View various categories (e.g., Pain Relief, Vitamins, Cough/Cold).
 3. Click a product to see details (price, stock, OTC/Prescription status).
-4. **✅ Expected:** Product list is rendered from the real database.
+4. **✅ Expected:** Product list is rendered from the local database.
 
 ### **4) Search for a Product**
 1. Go to the **Products** page.
-2. Type in the **Search bar** (e.g., “Panadol”, “Samahan”).
+2. Type in the **Search bar** (e.g., "Panadol", "Samahan").
 3. System shows matching products instantly.
 4. Optionally use filters (OTC only, in-stock, price range).
 5. **✅ Expected:** Real-time filtering of product data.
@@ -52,13 +72,13 @@ This guide provides a comprehensive, step-by-step walkthrough for testing the Vi
 ### **6) Try to Buy Prescription Product (System Blocks)**
 1. Open a **Prescription Required** product (e.g., Amoxicillin).
 2. Click **Add to Cart / Buy**.
-3. **✅ Expected:** System shows message: *“This item requires a verified doctor prescription. Upload prescription to continue.”*
+3. **✅ Expected:** System shows message: *"This item requires a verified doctor prescription. Upload prescription to continue."*
 4. System displays the **Upload Prescription** button.
 
 ### **7) Upload Prescription (Image/PDF) and Submit Request**
 1. Click **Upload Prescription**.
 2. Choose a file (clear Image or PDF).
-3. Optionally add notes (e.g., “Need 10 tablets”).
+3. Optionally add notes (e.g., "Need 10 tablets").
 4. Click **Submit**.
 5. **✅ Expected:** System creates request with status **Pending Review**. Seen in **My Prescription Requests**.
 
@@ -79,7 +99,7 @@ This guide provides a comprehensive, step-by-step walkthrough for testing the Vi
 2. Select a specific order.
 3. View the status timeline:
    *   *Pending Review → Approved → Awaiting Payment → Paid → Preparing → Ready for Delivery*
-4. **✅ Expected:** Final notification: *“Ready for delivery (rider module future)”*.
+4. **✅ Expected:** Final notification: *"Ready for delivery (rider module future)"*.
 
 ---
 
@@ -109,10 +129,17 @@ This guide provides a comprehensive, step-by-step walkthrough for testing the Vi
 ---
 
 ## 🎯 Success Checklist
+- [ ] MongoDB local service is running on port `27017`.
+- [ ] Backend server starts without DB connection errors.
 - [ ] Customer registers and logs in smoothly.
-- [ ] Products are fetched from real backend.
+- [ ] Products are fetched from the local database.
 - [ ] Prescription upload workflow is functional.
 - [ ] Pharmacist can set prices and approve.
 - [ ] Orders transition through all statuses correctly.
 
-**The Viduz Pharmacy system is now ready for end-to-end user journey testing!** 🚀
+---
+
+> **ℹ️ Note:** This project uses a **local MongoDB Community Server** (not MongoDB Atlas).
+> No cloud credentials or internet connection are required for the database to function.
+> Uploaded prescription files are stored locally under `server/uploads/`.
+

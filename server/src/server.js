@@ -11,16 +11,16 @@ const startServer = async () => {
 
         const server = app.listen(PORT, () => {
             console.log(`
-╔═══════════════════════════════════════════════════════════╗
-║                                                           ║
-║   🏥  Viduz Pharmacy API Server                          ║
-║                                                           ║
-║   🚀  Server running on port ${PORT}                        ║
-║   🌍  Environment: ${config.nodeEnv}                    ║
-║   📡  API: http://localhost:${PORT}/api                    ║
-║   ❤️   Health: http://localhost:${PORT}/api/health         ║
-║                                                           ║
-╚═══════════════════════════════════════════════════════════╝
+═══════════════════════════════════════════════════════════
+                                                           
+   🏥  Viduz Pharmacy API Server                           
+                                                           
+   Server running on port ${PORT}                     
+   Environment: ${config.nodeEnv}                      
+   API: http://localhost:${PORT}/api                    
+   Health: http://localhost:${PORT}/api/health         
+                                                           
+═══════════════════════════════════════════════════════════
             `);
         });
 
