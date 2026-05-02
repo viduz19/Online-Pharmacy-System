@@ -267,10 +267,6 @@ function Home() {
                         <p className="text-gray-500 text-xs font-bold uppercase tracking-widest">
                             © 2026 Viduz Pharmacy. All rights reserved.
                         </p>
-                        <div className="flex gap-8 text-gray-500 text-xs font-bold uppercase tracking-widest">
-                            <Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
-                            <Link to="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
-                        </div>
                     </div>
                 </div>
             </footer>

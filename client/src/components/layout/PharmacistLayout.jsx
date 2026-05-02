@@ -18,6 +18,8 @@ import {
 import { authService } from '../../services/api.service';
 import toast from 'react-hot-toast';
 import logo from "../../assets/Online Pharmacy System.png";
+import NotificationDropdown from '../NotificationDropdown';
+
 
 const sidebarItems = [
     { name: 'Dashboard', path: '/pharmacist/dashboard', icon: LayoutDashboard },
@@ -26,7 +28,6 @@ const sidebarItems = [
     { name: 'Inventory', path: '/pharmacist/products', icon: Package },
     { name: 'Approved', path: '/pharmacist/prescriptions/approved', icon: CheckCircle },
     { name: 'Rejected', path: '/pharmacist/prescriptions/rejected', icon: XCircle },
-    { name: 'WhatsApp', path: '/pharmacist/whatsapp', icon: MessageSquare },
     { name: 'Profile', path: '/pharmacist/profile', icon: User },
     { name: 'Settings', path: '/pharmacist/settings', icon: Settings },
 ];
@@ -121,10 +122,7 @@ function PharmacistLayout({ children }) {
                     </div>
 
                     <div className="flex items-center space-x-6">
-                        <button className="relative text-gray-500 hover:text-yellow-600 transition-colors p-2 rounded-lg hover:bg-gray-50">
-                            <Bell className="w-6 h-6" />
-                            <span className="absolute top-2 right-2 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full border-2 border-white font-bold">2</span>
-                        </button>
+                        <NotificationDropdown role="PHARMACIST" color="yellow" />
                         
                         <div className="flex items-center space-x-3 border-l pl-6 border-gray-200">
                             <div className="text-right hidden sm:block">

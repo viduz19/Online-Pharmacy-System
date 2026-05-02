@@ -29,6 +29,8 @@ import AdminProfile from '../pages/AdminProfile';
 import AdminSettings from '../pages/AdminSettings';
 import PharmacistProfile from '../pages/PharmacistProfile';
 import PharmacistSettings from '../pages/PharmacistSettings';
+import Notifications from '../pages/Notifications';
+
 
 const NotFound = () => (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -60,6 +62,8 @@ function AppRoutes() {
             <Route path="/customer/prescriptions/:id" element={<PrescriptionDetails />} />
             <Route path="/customer/profile" element={<CustomerProfile />} />
             <Route path="/customer/settings" element={<CustomerSettings />} />
+            <Route path="/customer/notifications" element={<Notifications />} />
+
 
             {/* Pharmacist Routes */}
             <Route path="/pharmacist/dashboard" element={<PharmacistDashboard />} />
@@ -70,6 +74,8 @@ function AppRoutes() {
             <Route path="/pharmacist/products" element={<PharmacistProducts />} />
             <Route path="/pharmacist/profile" element={<PharmacistProfile />} />
             <Route path="/pharmacist/settings" element={<PharmacistSettings />} />
+            <Route path="/pharmacist/notifications" element={<Notifications />} />
+
 
             {/* Admin Routes */}
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
@@ -82,6 +88,8 @@ function AppRoutes() {
             <Route path="/admin/reports" element={<AdminReports />} />
             <Route path="/admin/profile" element={<AdminProfile />} />
             <Route path="/admin/settings" element={<AdminSettings />} />
+            <Route path="/admin/notifications" element={<Notifications />} />
+
 
             {/* 404 */}
             <Route path="*" element={<NotFound />} />

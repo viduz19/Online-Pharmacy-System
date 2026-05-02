@@ -14,7 +14,8 @@ import {
     Upload, 
     Search, 
     User,
-    Pill
+    Pill,
+    Bell
 } from 'lucide-react';
 import { authService } from '../services/api.service';
 import toast from 'react-hot-toast';
@@ -37,6 +38,7 @@ function Sidebar({ role }) {
         { name: 'Customers', path: '/admin/customers', icon: Users },
         { name: 'Pharmacists', path: '/admin/users', icon: UserPlus }, // Reuse users page or specific one
         { name: 'Reports', path: '/admin/reports', icon: FileBarChart },
+        { name: 'Notifications', path: '/admin/notifications', icon: Bell },
         { name: 'Settings', path: '/admin/settings', icon: Settings },
     ];
 
@@ -46,6 +48,7 @@ function Sidebar({ role }) {
         { name: 'Orders', path: '/pharmacist/orders', icon: ShoppingCart },
         { name: 'Prescriptions', path: '/pharmacist/prescriptions', icon: FileText },
         { name: 'WhatsApp', path: '/pharmacist/messages', icon: MessageCircle },
+        { name: 'Notifications', path: '/pharmacist/notifications', icon: Bell },
         { name: 'Profile', path: '/pharmacist/profile', icon: User },
     ];
 
@@ -57,6 +60,7 @@ function Sidebar({ role }) {
         { name: 'My Orders', path: '/customer/orders', icon: Package },
         { name: 'Upload Prescription', path: '/customer/upload-prescription', icon: Upload },
         { name: 'WhatsApp Support', path: '/customer/help', icon: MessageCircle },
+        { name: 'Notifications', path: '/customer/notifications', icon: Bell },
         { name: 'Profile', path: '/customer/profile', icon: User },
     ];
 
